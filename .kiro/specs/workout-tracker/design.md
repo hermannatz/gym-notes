@@ -213,7 +213,25 @@ users (1)──<(N) workout_templates (1)──<(N) template_exercises >──(1
 sync_change_log  — per-user record of applied client change IDs (idempotency ledger)
 ```
 
-Core columns (indicative; finalized before migration in the data-model task):
+**Finalized decisions (Milestone 1, implemented in `scripts/migrate.js`):**
+
+- **Primary keys:** `users` and `muscle_groups` use `SERIAL` (server-created / seeded,
+  never offline). Everything client-creatable uses `UUID DEFAULT gen_random_uuid()` so IDs
+  can be generated offline and are stable for idempotent sync: `exercises`,
+  `workout_templates`, `template_exercises`, `training_sessions`, `session_exercises`,
+  `workout_sets`. `sync_change_log` uses `BIGSERIAL`.
+- **Units:** each `workout_sets` row stores a canonical `weight NUMERIC(7,2)` plus explicit
+  `weight_unit` ('kg'|'lb'); `users.preferred_unit` (default 'kg') holds the display
+  preference. Conversions are computed, never destructive.
+- **Deletion:** templates and exercises soft-delete via `is_archived`; the session tree
+  (`training_sessions` → `session_exercises` → `workout_sets`) cascades on delete; exercises
+  referenced by templates/sessions use `ON DELETE RESTRICT` so history is never orphaned;
+  `training_sessions.template_id` is `ON DELETE SET NULL` so archiving/removing a template
+  leaves history intact.
+- **Validation:** schema applied and idempotency verified against Postgres 16 before commit.
+  `gen_random_uuid()` is built in (no `pgcrypto`/`uuid-ossp` extension required).
+
+Core columns (indicative; finalized above):
 
 - **exercises**: `id`, `owner_user_id` (nullable → shared), `name`, `primary_muscle_group_id`,
   `equipment`, `movement_category`, `description`, timestamps. Secondary muscles via

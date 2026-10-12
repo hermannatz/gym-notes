@@ -76,7 +76,7 @@ and building green, and until their scope is confirmed.
 
 ## Later milestones (roadmap — do not start until Milestone 0 is green and scope is confirmed)
 
-- [ ] 8. Milestone 1 — Domain model and migrations
+- [x] 8. Milestone 1 — Domain model and migrations
   - Finalize entity columns, relationships, ownership, deletion behaviour, indexes, timestamps,
     and constraints; append domain `CREATE TABLE IF NOT EXISTS` statements to `scripts/migrate.js`
     (exercises, muscle_groups, exercise_muscles, workout_templates, template_exercises,
