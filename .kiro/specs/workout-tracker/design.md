@@ -46,7 +46,7 @@ This document covers the full architecture, but the **first implementation miles
 ┌─────────────────────────────────────────────────────────────┐
 │                   Next.js 16 (serverless, Vercel-style)        │
 │                                                                │
-│  middleware.ts  ── Clerk route protection                      │
+│  proxy.ts       ── Clerk route protection                      │
 │       │                                                        │
 │       ▼                                                        │
 │  app/api/*/route.js  ── convention: getDbUser → validate →     │
@@ -100,7 +100,7 @@ app/
   sign-up/[[...sign-up]]/page.js   # <SignUp />
   api/
     user/route.js                  # GET current user (placeholder, follows convention)
-middleware.ts                      # Clerk middleware + route matcher
+proxy.ts                           # Clerk middleware + route matcher (Next 16 convention)
 scripts/
   migrate.js                       # Idempotent migration runner (users table only)
 __tests__/
@@ -139,7 +139,8 @@ export async function getDbUser() {
 `SMTP_HOST`/`SMTP_PORT` defaulting to `localhost:1025`. Sender from `EMAIL_FROM`. Send wrapped
 in try/catch; failures logged, never thrown.
 
-**`middleware.ts`** — `clerkMiddleware` + `createRouteMatcher`. Protected:
+**`proxy.ts`** (Next.js 16 renamed the `middleware.ts` convention to `proxy.ts`;
+same code) — `clerkMiddleware` + `createRouteMatcher`. Protected:
 `/dashboard(.*)`, `/admin(.*)`, `/api(.*)`. Exempt: `/api/webhooks(.*)`. Standard
 `config.matcher` skipping Next internals and static assets.
 
@@ -233,7 +234,7 @@ sync_change_log  — per-user record of applied client change IDs (idempotency l
 
 **User provisioning (Clerk → DB sync):** Clerk owns identity; the local `users` row is
 created/updated/removed by a public webhook at `app/api/webhooks/clerk/route.js` (exempted
-from auth in `middleware.ts`). It verifies the Svix signature with `verifyWebhook()` from
+from auth in `proxy.ts`). It verifies the Svix signature with `verifyWebhook()` from
 `@clerk/nextjs/webhooks` (reads `CLERK_WEBHOOK_SIGNING_SECRET`), then on `user.created` /
 `user.updated` upserts `clerk_user_id`, primary email, and name via
 `INSERT ... ON CONFLICT (clerk_user_id) DO UPDATE` (idempotent), and on `user.deleted`
