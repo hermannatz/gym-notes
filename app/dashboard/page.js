@@ -28,11 +28,12 @@ export default async function DashboardPage() {
           </span>
         </Link>
 
-        {/* Placeholders for upcoming milestones. */}
-        <span className="dashboard-card dashboard-card-disabled" aria-disabled="true">
+        <Link className="dashboard-card" href="/templates">
           <span className="dashboard-card-title">Templates</span>
-          <span className="dashboard-card-sub">Coming soon</span>
-        </span>
+          <span className="dashboard-card-sub">Plan your workouts</span>
+        </Link>
+
+        {/* Placeholders for upcoming milestones. */}
         <span className="dashboard-card dashboard-card-disabled" aria-disabled="true">
           <span className="dashboard-card-title">Start Training</span>
           <span className="dashboard-card-sub">Coming soon</span>

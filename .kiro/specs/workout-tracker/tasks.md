@@ -92,10 +92,19 @@ and building green, and until their scope is confirmed.
   - 22 tests incl. cross-user denial; queries validated against Postgres 16.
   - _Requirements: 4.1, 4.2, 4.3, 2.*, 13.1, 13.4_
 
-- [ ] 10. Milestone 3 — Templates (API + UI)
-  - Create/rename/duplicate/edit/archive templates; add/reorder exercises; targets;
-    snapshot-on-start.
-  - _Requirements: 3.1, 3.2, 3.3, 3.4, 3.5_
+- [x] 10. Milestone 3 — Templates (API + UI)
+  - Create/rename/duplicate/edit/archive templates; add/reorder exercises; targets.
+  - Routes: `GET`/`POST /api/templates`; `GET`/`PATCH`/`DELETE /api/templates/[id]`;
+    `POST /api/templates/[id]/duplicate`; `POST /api/templates/[id]/exercises`;
+    `PATCH`/`DELETE /api/templates/[id]/exercises/[teId]`;
+    `PUT /api/templates/[id]/exercises/order` (atomic reorder via sql.transaction).
+  - Ownership enforced in SQL (incl. subquery guards for nested rows); foreign access 404.
+  - Added exercises must be visible to the user (shared or owned); archive = soft-delete.
+  - UI: `/templates` list (create/duplicate/archive) + `/templates/[id]` editor
+    (rename, add, up/down reorder, remove, target sets). Dashboard links enabled.
+  - 22 new tests incl. cross-user denial (48 total); SQL validated against Postgres 16.
+  - NOTE: snapshot-on-start deferred to Milestone 4 (session creation).
+  - _Requirements: 3.1, 3.2, 3.3, 3.4, 13.4_
 
 - [ ] 11. Milestone 4 — Live session + set logging
   - Start from template/blank; per-exercise previous performance; record/mark/edit/delete sets;

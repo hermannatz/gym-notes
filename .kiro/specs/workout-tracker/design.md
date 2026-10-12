@@ -300,6 +300,28 @@ user id is never trusted.
 - Cross-user denial is covered by tests and additionally validated at the SQL level against
   Postgres 16.
 
+### Templates API (Milestone 3, implemented)
+
+- `GET /api/templates` — the user's non-archived templates with an `exercise_count`.
+- `POST /api/templates` — create (owner from auth user).
+- `GET /api/templates/[id]` — a template plus its ordered exercises (joined to exercise +
+  muscle-group names).
+- `PATCH /api/templates/[id]` — rename and/or archive-toggle. `DELETE` = soft-delete (archive).
+- `POST /api/templates/[id]/duplicate` — copies the template and its exercises via
+  `INSERT ... SELECT` (re-scoped to the owned source), named "<name> (copy)".
+- `POST /api/templates/[id]/exercises` — add an exercise; validates the template is owned
+  **and** the `exercise_id` is visible to the user (shared or owned); position defaults to end.
+- `PATCH`/`DELETE /api/templates/[id]/exercises/[teId]` — edit targets/position or remove.
+  Ownership of the nested row is enforced via a `template_id IN (SELECT ... WHERE owner = user)`
+  subquery guard, so foreign rows match nothing → 404.
+- `PUT /api/templates/[id]/exercises/order` — atomic reorder. Takes `{ order: [teId,...] }` and
+  issues one scoped `UPDATE ... SET position = index` per id inside a single `sql.transaction()`
+  (lazy `NeonQueryPromise` descriptors), so the reorder is all-or-nothing.
+- **UI:** `/templates` (list, create, duplicate, archive) and `/templates/[id]` (rename on
+  blur, add exercise from the library, up/down reorder, remove, target sets). Mobile-first;
+  reorder uses up/down buttons rather than drag-drop for touch reliability.
+- Cross-user denial covered by tests and validated at the SQL level against Postgres 16.
+
 ### Offline + sync design
 
 - **Local store:** IndexedDB object stores mirroring sessions, session_exercises, sets, plus a
