@@ -2,7 +2,7 @@
 
 ## Overview
 
-A mobile-first, offline-first PWA for recording gym workouts, built on Next.js 15 (App
+A mobile-first, offline-first PWA for recording gym workouts, built on Next.js 16 (App
 Router) with a Neon Postgres backend, Clerk authentication, and Nodemailer email. The
 browser (IndexedDB + service worker) is the durable source of truth during a workout; the
 Next.js API routes are an idempotent sync target backed by Postgres.
@@ -44,7 +44,7 @@ This document covers the full architecture, but the **first implementation miles
         │  HTTPS (batched, idempotent sync requests)
         ▼
 ┌─────────────────────────────────────────────────────────────┐
-│                   Next.js 15 (serverless, Vercel-style)        │
+│                   Next.js 16 (serverless, Vercel-style)        │
 │                                                                │
 │  middleware.ts  ── Clerk route protection                      │
 │       │                                                        │

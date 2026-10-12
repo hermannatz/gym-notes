@@ -7,7 +7,7 @@ and building green, and until their scope is confirmed.
 
 ## Milestone 0 — Foundation (implement now)
 
-- [ ] 1. Initialize project configuration and dependencies
+- [x] 1. Initialize project configuration and dependencies
   - Create `package.json` with `"type": "module"`, the required scripts (`dev`, `build`,
     `start`, `migrate`, `postbuild`, `test`, `test:watch` with `--experimental-vm-modules`),
     and current stable versions of `@clerk/nextjs`, `@neondatabase/serverless`, `dotenv`,
@@ -21,53 +21,53 @@ and building green, and until their scope is confirmed.
     `SMTP_HOST`/`SMTP_PORT`, `EMAIL_FROM` (no secrets).
   - _Requirements: 1.2, 1.3, 1.4, 1.12, 1.15, 1.16_
 
-- [ ] 2. Implement the library layer
-  - [ ] 2.1 `app/lib/db.js` — export `sql` from
+- [x] 2. Implement the library layer
+  - [x] 2.1 `app/lib/db.js` — export `sql` from
     `neon(process.env.DATABASE_URL, { fetchConnectionCache: true })`.
     - _Requirements: 1.5_
-  - [ ] 2.2 `app/lib/auth.js` — async `getDbUser()` using Clerk `auth()`; `null` when no
+  - [x] 2.2 `app/lib/auth.js` — async `getDbUser()` using Clerk `auth()`; `null` when no
     `userId`, else the `users` row keyed by `clerk_user_id`.
     - _Requirements: 1.6, 2.5, 11.2_
-  - [ ] 2.3 `app/lib/email.js` — async `sendEmail({ to, subject, html })`; Resend SMTP (465)
+  - [x] 2.3 `app/lib/email.js` — async `sendEmail({ to, subject, html })`; Resend SMTP (465)
     when `RESEND_API_KEY`, else `SMTP_HOST`/`SMTP_PORT` (default `localhost:1025`); sender from
     `EMAIL_FROM`; try/catch logs failures without throwing.
     - _Requirements: 1.7_
 
-- [ ] 3. Implement Clerk middleware and app shell
-  - [ ] 3.1 `middleware.ts` — `clerkMiddleware` + `createRouteMatcher`; protect
+- [x] 3. Implement Clerk middleware and app shell
+  - [x] 3.1 `middleware.ts` — `clerkMiddleware` + `createRouteMatcher`; protect
     `/dashboard(.*)`, `/admin(.*)`, `/api(.*)`; exempt `/api/webhooks(.*)`; standard
     `config.matcher`.
     - _Requirements: 1.8_
-  - [ ] 3.2 `app/layout.js` — `<ClerkProvider>` with sign-in/sign-up fallback redirects to
+  - [x] 3.2 `app/layout.js` — `<ClerkProvider>` with sign-in/sign-up fallback redirects to
     `/dashboard`, placeholder metadata, `<html lang="en">`.
     - _Requirements: 1.9_
-  - [ ] 3.3 `app/page.js` (public landing placeholder) and `app/globals.css` (minimal).
+  - [x] 3.3 `app/page.js` (public landing placeholder) and `app/globals.css` (minimal).
     - _Requirements: 1.1_
-  - [ ] 3.4 `app/sign-in/[[...sign-in]]/page.js` and `app/sign-up/[[...sign-up]]/page.js`
+  - [x] 3.4 `app/sign-in/[[...sign-in]]/page.js` and `app/sign-up/[[...sign-up]]/page.js`
     rendering Clerk `<SignIn />` / `<SignUp />`.
     - _Requirements: 1.11_
 
-- [ ] 4. Implement the migration runner (users table only)
+- [x] 4. Implement the migration runner (users table only)
   - `scripts/migrate.js` — load `.env.local` via dotenv, build Neon `sql`, run
     `CREATE TABLE IF NOT EXISTS users (...)` in a try/catch logging per-table progress;
     `process.exit(1)` on failure; structured so later tables append.
   - _Requirements: 1.10_
 
-- [ ] 5. Implement the example authenticated route (placeholder)
+- [x] 5. Implement the example authenticated route (placeholder)
   - `app/api/user/route.js` — GET returning the current user via `getDbUser()`, following the
     convention (401 on null, try/catch → 500, `Response.json`).
   - _Requirements: 1.14, 2.1, 2.3, 2.4_
 
-- [ ] 6. Implement the Jest ESM test harness and example test
-  - [ ] 6.1 `__tests__/setup.js` — `mockSql`, `mockGetDbUser`, Clerk `auth` mock registered
+- [x] 6. Implement the Jest ESM test harness and example test
+  - [x] 6.1 `__tests__/setup.js` — `mockSql`, `mockGetDbUser`, Clerk `auth` mock registered
     via `jest.unstable_mockModule` before route imports; export `resetMocks()` and
     `makeRequest(url, opts)` (JSON content-type).
     - _Requirements: 1.13_
-  - [ ] 6.2 `__tests__/api/user.test.js` — dynamic handler import in `beforeEach` after
+  - [x] 6.2 `__tests__/api/user.test.js` — dynamic handler import in `beforeEach` after
     `resetMocks()`; cover 401 (null user) and authenticated-success cases.
     - _Requirements: 1.14_
 
-- [ ] 7. Verify the foundation
+- [x] 7. Verify the foundation
   - Run `npm install`, then `npm test` (confirm user-route tests pass), then `npm run build`
     (confirm compile). Report anything unverifiable (e.g. live DB connection without env vars).
   - _Requirements: 1.17_

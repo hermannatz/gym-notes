@@ -17,8 +17,9 @@ native mobile app.
 
 The implementation stack is fixed and takes precedence over any stack implied elsewhere:
 
-- **Framework:** Next.js 15 (App Router), React 18. ES modules throughout
+- **Framework:** Next.js 16 (App Router), React 19. ES modules throughout
   (`"type": "module"` in `package.json`). Current stable releases of all packages.
+  (Updated from the originally proposed Next.js 15 / React 18 — see Requirement 1.1.)
 - **Database:** PostgreSQL via the Neon serverless driver (`@neondatabase/serverless`),
   using the tagged-template `sql` query style.
 - **Auth:** Clerk (`@clerk/nextjs`) with middleware-based route protection.
@@ -66,7 +67,7 @@ verified base.
 
 #### Acceptance Criteria
 
-1. WHEN the repository is scaffolded THEN it SHALL use Next.js 15 (App Router), React 18,
+1. WHEN the repository is scaffolded THEN it SHALL use Next.js 16 (App Router), React 19,
    and ES modules (`"type": "module"`).
 2. WHEN dependencies are installed THEN they SHALL be current stable releases of
    `@clerk/nextjs`, `@neondatabase/serverless`, `dotenv`, `next`, `nodemailer`, `react`,
