@@ -242,6 +242,23 @@ removes the row (owned data cascades). Unhandled event types are acknowledged wi
 Clerk does not retry. This is the bridge that makes `getDbUser()` resolve a row for a signed-in
 user.
 
+**Lazy provisioning fallback:** `getDbUser()` also provisions the `users` row on demand — if
+a valid Clerk session has no matching row, it reads `currentUser()` and upserts the row before
+returning it. The webhook remains the primary path, but this fallback means a signed-in user
+never lacks a row even if a webhook is missed, and it makes local development work without the
+webhook (which only fires against the deployed URL).
+
+**Starter data & post-sign-in landing:** the migration seeds ~18 shared exercises
+(`owner_user_id IS NULL`), guarded by a partial unique index on `name WHERE owner_user_id IS
+NULL` so the seed is idempotent. A minimal protected `/dashboard` page is the post-sign-in
+landing spot (Clerk redirects here) and links out to the exercise library, with placeholders
+for templates / training / history.
+
+**Known tech debt:** Clerk now recommends resource-based auth checks over
+`createRouteMatcher` in middleware/proxy. Our API routes are already individually protected via
+`getDbUser()` (the real data-layer gate); the proxy matcher is defense-in-depth. Migrating off
+`createRouteMatcher` is deferred, non-blocking.
+
 Core columns (indicative; finalized above):
 
 - **exercises**: `id`, `owner_user_id` (nullable → shared), `name`, `primary_muscle_group_id`,

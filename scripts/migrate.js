@@ -240,6 +240,47 @@ const migrations = [
       ON CONFLICT (name) DO NOTHING;
     `,
   },
+
+  // Enforce one shared exercise per name so the starter seed is idempotent.
+  // Partial unique index applies only to shared rows (owner_user_id IS NULL);
+  // personal exercises are unaffected and may share names freely.
+  {
+    name: 'uniq_shared_exercise_name',
+    run: () => sql`
+      CREATE UNIQUE INDEX IF NOT EXISTS uniq_shared_exercise_name
+      ON exercises (name)
+      WHERE owner_user_id IS NULL;
+    `,
+  },
+
+  // Seed a starter set of shared exercises so a new user's library isn't empty.
+  // primary_muscle_group_id is resolved by name; ON CONFLICT keeps it idempotent.
+  {
+    name: 'seed_shared_exercises',
+    run: () => sql`
+      INSERT INTO exercises (owner_user_id, name, primary_muscle_group_id, equipment, movement_category)
+      VALUES
+        (NULL, 'Barbell Bench Press',      (SELECT id FROM muscle_groups WHERE name = 'Chest'),      'Barbell',  'Push'),
+        (NULL, 'Incline Dumbbell Press',   (SELECT id FROM muscle_groups WHERE name = 'Chest'),      'Dumbbell', 'Push'),
+        (NULL, 'Overhead Press',           (SELECT id FROM muscle_groups WHERE name = 'Shoulders'),  'Barbell',  'Push'),
+        (NULL, 'Lateral Raise',            (SELECT id FROM muscle_groups WHERE name = 'Shoulders'),  'Dumbbell', 'Isolation'),
+        (NULL, 'Triceps Pushdown',         (SELECT id FROM muscle_groups WHERE name = 'Triceps'),    'Cable',    'Isolation'),
+        (NULL, 'Pull-Up',                  (SELECT id FROM muscle_groups WHERE name = 'Lats'),       'Bodyweight','Pull'),
+        (NULL, 'Barbell Row',              (SELECT id FROM muscle_groups WHERE name = 'Back'),       'Barbell',  'Pull'),
+        (NULL, 'Lat Pulldown',             (SELECT id FROM muscle_groups WHERE name = 'Lats'),       'Cable',    'Pull'),
+        (NULL, 'Barbell Curl',             (SELECT id FROM muscle_groups WHERE name = 'Biceps'),     'Barbell',  'Isolation'),
+        (NULL, 'Face Pull',                (SELECT id FROM muscle_groups WHERE name = 'Shoulders'),  'Cable',    'Pull'),
+        (NULL, 'Back Squat',               (SELECT id FROM muscle_groups WHERE name = 'Quadriceps'), 'Barbell',  'Legs'),
+        (NULL, 'Romanian Deadlift',        (SELECT id FROM muscle_groups WHERE name = 'Hamstrings'), 'Barbell',  'Legs'),
+        (NULL, 'Deadlift',                 (SELECT id FROM muscle_groups WHERE name = 'Back'),       'Barbell',  'Pull'),
+        (NULL, 'Leg Press',                (SELECT id FROM muscle_groups WHERE name = 'Quadriceps'), 'Machine',  'Legs'),
+        (NULL, 'Leg Curl',                 (SELECT id FROM muscle_groups WHERE name = 'Hamstrings'), 'Machine',  'Isolation'),
+        (NULL, 'Standing Calf Raise',      (SELECT id FROM muscle_groups WHERE name = 'Calves'),     'Machine',  'Isolation'),
+        (NULL, 'Plank',                    (SELECT id FROM muscle_groups WHERE name = 'Core'),       'Bodyweight','Core'),
+        (NULL, 'Hip Thrust',               (SELECT id FROM muscle_groups WHERE name = 'Glutes'),     'Barbell',  'Legs')
+      ON CONFLICT (name) WHERE owner_user_id IS NULL DO NOTHING;
+    `,
+  },
 ];
 
 async function migrate() {

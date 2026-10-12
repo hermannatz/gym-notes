@@ -11,6 +11,7 @@ import { jest } from '@jest/globals';
 export const mockSql = jest.fn();
 export const mockGetDbUser = jest.fn();
 export const mockAuth = jest.fn();
+export const mockCurrentUser = jest.fn();
 export const mockVerifyWebhook = jest.fn();
 
 jest.unstable_mockModule('@/app/lib/db', () => ({
@@ -23,6 +24,7 @@ jest.unstable_mockModule('@/app/lib/auth', () => ({
 
 jest.unstable_mockModule('@clerk/nextjs/server', () => ({
   auth: mockAuth,
+  currentUser: mockCurrentUser,
 }));
 
 jest.unstable_mockModule('@clerk/nextjs/webhooks', () => ({
@@ -34,6 +36,7 @@ export function resetMocks() {
   mockSql.mockReset();
   mockGetDbUser.mockReset();
   mockAuth.mockReset();
+  mockCurrentUser.mockReset();
   mockVerifyWebhook.mockReset();
 }
 

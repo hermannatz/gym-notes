@@ -135,3 +135,48 @@ button {
   background: rgba(22, 163, 74, 0.12);
   border: 1px solid rgba(22, 163, 74, 0.4);
 }
+
+/* Dashboard navigation cards */
+.dashboard-nav {
+  display: grid;
+  grid-template-columns: 1fr;
+  gap: 0.75rem;
+  margin-top: 1rem;
+}
+
+@media (min-width: 480px) {
+  .dashboard-nav {
+    grid-template-columns: 1fr 1fr;
+  }
+}
+
+.dashboard-card {
+  display: flex;
+  flex-direction: column;
+  gap: 0.2rem;
+  padding: 1rem;
+  border: 1px solid rgba(128, 128, 128, 0.3);
+  border-radius: 0.75rem;
+  text-decoration: none;
+  color: inherit;
+  min-height: 4.5rem;
+  justify-content: center;
+}
+
+.dashboard-card:not(.dashboard-card-disabled):active {
+  background: rgba(37, 99, 235, 0.08);
+}
+
+.dashboard-card-title {
+  font-weight: 600;
+  font-size: 1.05rem;
+}
+
+.dashboard-card-sub {
+  font-size: 0.85rem;
+  opacity: 0.7;
+}
+
+.dashboard-card-disabled {
+  opacity: 0.5;
+}
