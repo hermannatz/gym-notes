@@ -180,3 +180,50 @@ button {
 .dashboard-card-disabled {
   opacity: 0.5;
 }
+
+/* Live-session set entry table */
+.set-table {
+  width: 100%;
+  border-collapse: collapse;
+}
+
+.set-table th {
+  font-size: 0.75rem;
+  font-weight: 600;
+  text-align: left;
+  opacity: 0.7;
+  padding: 0.25rem 0.3rem;
+}
+
+.set-table td {
+  padding: 0.2rem 0.3rem;
+  vertical-align: middle;
+}
+
+.set-table input[type='number'] {
+  width: 100%;
+  min-height: 2.5rem;
+  padding: 0.4rem 0.5rem;
+  border: 1px solid rgba(128, 128, 128, 0.4);
+  border-radius: 0.4rem;
+  background: transparent;
+  color: inherit;
+  font-size: 1.05rem;
+  text-align: center;
+}
+
+.set-table input[type='checkbox'] {
+  width: 1.5rem;
+  height: 1.5rem;
+}
+
+.set-table td:first-child {
+  width: 1.5rem;
+  text-align: center;
+  opacity: 0.7;
+}
+
+.btn-small {
+  min-height: 2.2rem;
+  padding: 0.3rem 0.6rem;
+}

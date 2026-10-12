@@ -106,10 +106,18 @@ and building green, and until their scope is confirmed.
   - NOTE: snapshot-on-start deferred to Milestone 4 (session creation).
   - _Requirements: 3.1, 3.2, 3.3, 3.4, 13.4_
 
-- [ ] 11. Milestone 4 — Live session + set logging
-  - Start from template/blank; per-exercise previous performance; record/mark/edit/delete sets;
-    add/remove/skip/reorder exercises; finish/abandon/resume.
-  - _Requirements: 5.*, 6.*, 7.2_
+- [x] 11. Milestone 4 — Live session + set logging
+  - Start from template (snapshot-on-start, atomic via sql.transaction) or blank.
+  - Routes: sessions CRUD + status (finish/abandon/resume); session-exercise add/skip/
+    reorder/remove; previous-performance query; set add/edit/delete.
+  - Snapshot-on-start copies template_exercises into session_exercises so later template
+    edits never change history (validated against Postgres 16).
+  - Ownership enforced in SQL at every nesting level (session -> exercise -> set); 404 on
+    foreign access.
+  - UI: `/train` (start/resume) + `/train/[id]` (set-entry table, mark/add/edit/delete sets,
+    show-last-time, add/skip/remove exercise, finish/abandon). Dashboard card enabled.
+  - 24 new tests incl. cross-user denial (72 total).
+  - _Requirements: 5.*, 6.*, 7.2, 3.5, 13.4_
 
 - [ ] 12. Milestone 5 — Training history
   - Browse/open completed sessions; actual-vs-planned distinction; resume unfinished.

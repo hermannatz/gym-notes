@@ -322,6 +322,34 @@ user id is never trusted.
   reorder uses up/down buttons rather than drag-drop for touch reliability.
 - Cross-user denial covered by tests and validated at the SQL level against Postgres 16.
 
+### Sessions / live training API (Milestone 4, implemented)
+
+- `GET /api/sessions` — the user's sessions (optional `?status=` filter), with exercise counts.
+- `POST /api/sessions` — start a workout. The session UUID is generated in the handler
+  (`crypto.randomUUID()`) so, when a `template_id` is given, the session insert and the
+  **snapshot** (`INSERT ... SELECT` of `template_exercises` into `session_exercises`) run
+  atomically in one `sql.transaction()`. This is the **snapshot-on-start** that isolates
+  history: validated against Postgres 16 that editing the template afterwards does not change
+  the session's copied targets (Req 3.5). Generating ids client-side also sets up the offline
+  model for Milestone 6.
+- `GET /api/sessions/[id]` — the full session with exercises (ordered) and their sets (ordered),
+  nested server-side. `PATCH` finishes/abandons/resumes (status + `finished_at`) or renames.
+  `DELETE` removes the session (cascades to exercises/sets).
+- `POST /api/sessions/[id]/exercises` — add an exercise mid-session (visible-exercise check);
+  `PATCH [seId]` skip/unskip or reposition; `DELETE [seId]` remove (cascades to its sets).
+- `GET /api/sessions/[id]/exercises/[seId]/previous` — **previous performance**: the most
+  recent other session (any status) containing the same exercise, with that session's sets, for
+  side-by-side comparison. `{ previous: null }` when there is no history.
+- `POST /api/sessions/[id]/exercises/[seId]/sets` — add a set (weight/reps/unit/type/completed,
+  order defaults to end); `PATCH`/`DELETE [setId]` edit/remove.
+- Ownership is enforced in SQL at every nesting level via subquery guards
+  (`... IN (SELECT ... WHERE owner_user_id = user)`), so a foreign session/exercise/set matches
+  nothing → 404 (no leak). Covered by tests and validated against Postgres 16.
+- **UI:** `/train` (start blank or from a template, resume in-progress) and `/train/[id]` (the
+  live screen: per-set weight/reps/complete entry table, add/edit/delete sets, "show last time",
+  add/skip/remove exercise, finish/abandon). Mobile-first with large numeric inputs; mutations
+  reload for correctness (optimistic/offline writes arrive in Milestone 6).
+
 ### Offline + sync design
 
 - **Local store:** IndexedDB object stores mirroring sessions, session_exercises, sets, plus a
