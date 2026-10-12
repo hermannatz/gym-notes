@@ -350,6 +350,17 @@ user id is never trusted.
   add/skip/remove exercise, finish/abandon). Mobile-first with large numeric inputs; mutations
   reload for correctness (optimistic/offline writes arrive in Milestone 6).
 
+### Training history (Milestone 5, implemented)
+
+History is a UI layer over the existing sessions API — no new routes or migration. `GET
+/api/sessions` (with `?status=`) powers the list; `GET /api/sessions/[id]` powers the detail
+view. A shared `app/lib/metrics.js` defines the working-volume rule in one place (only
+completed, non-warm-up sets count; volume = weight × reps), unit-tested, and reused by history
+summaries now and analytics later (Milestone 8). UI: `/history` (unfinished sessions with
+resume links + completed/abandoned list) and `/history/[id]` (read-only session detail with
+per-exercise working-set count and volume). Historical records are presented as actual results,
+visually distinct from planned targets.
+
 ### Offline + sync design
 
 - **Local store:** IndexedDB object stores mirroring sessions, session_exercises, sets, plus a

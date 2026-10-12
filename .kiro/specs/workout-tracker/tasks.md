@@ -119,9 +119,15 @@ and building green, and until their scope is confirmed.
   - 24 new tests incl. cross-user denial (72 total).
   - _Requirements: 5.*, 6.*, 7.2, 3.5, 13.4_
 
-- [ ] 12. Milestone 5 — Training history
+- [x] 12. Milestone 5 — Training history
   - Browse/open completed sessions; actual-vs-planned distinction; resume unfinished.
-  - _Requirements: 7.1, 7.2_
+  - Reuses the existing sessions API (no new routes/migration).
+  - `app/lib/metrics.js` — shared working-volume rules (completed, non-warm-up only),
+    unit-tested; used by history summaries and future analytics.
+  - UI: `/history` (unfinished + completed lists, resume links) and `/history/[id]`
+    (read-only session with per-exercise working-set count + volume). Dashboard card enabled.
+  - 5 new metrics tests (77 total).
+  - _Requirements: 7.1, 7.2, 6.4_
 
 - [ ] 13. Milestone 6 — Offline persistence + PWA shell
   - IndexedDB local store (UUID IDs, pending-changes queue); service worker + manifest; install

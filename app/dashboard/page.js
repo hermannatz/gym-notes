@@ -38,11 +38,10 @@ export default async function DashboardPage() {
           <span className="dashboard-card-sub">Begin or resume a workout</span>
         </Link>
 
-        {/* Placeholders for upcoming milestones. */}
-        <span className="dashboard-card dashboard-card-disabled" aria-disabled="true">
+        <Link className="dashboard-card" href="/history">
           <span className="dashboard-card-title">History</span>
-          <span className="dashboard-card-sub">Coming soon</span>
-        </span>
+          <span className="dashboard-card-sub">Review past sessions</span>
+        </Link>
       </nav>
     </main>
   );
