@@ -11,6 +11,7 @@ import { jest } from '@jest/globals';
 export const mockSql = jest.fn();
 export const mockGetDbUser = jest.fn();
 export const mockAuth = jest.fn();
+export const mockVerifyWebhook = jest.fn();
 
 jest.unstable_mockModule('@/app/lib/db', () => ({
   sql: mockSql,
@@ -24,11 +25,16 @@ jest.unstable_mockModule('@clerk/nextjs/server', () => ({
   auth: mockAuth,
 }));
 
+jest.unstable_mockModule('@clerk/nextjs/webhooks', () => ({
+  verifyWebhook: mockVerifyWebhook,
+}));
+
 /** Reset all shared mocks to a clean state between tests. */
 export function resetMocks() {
   mockSql.mockReset();
   mockGetDbUser.mockReset();
   mockAuth.mockReset();
+  mockVerifyWebhook.mockReset();
 }
 
 /** Build a Request with a JSON content-type header. */

@@ -231,6 +231,16 @@ sync_change_log  — per-user record of applied client change IDs (idempotency l
 - **Validation:** schema applied and idempotency verified against Postgres 16 before commit.
   `gen_random_uuid()` is built in (no `pgcrypto`/`uuid-ossp` extension required).
 
+**User provisioning (Clerk → DB sync):** Clerk owns identity; the local `users` row is
+created/updated/removed by a public webhook at `app/api/webhooks/clerk/route.js` (exempted
+from auth in `middleware.ts`). It verifies the Svix signature with `verifyWebhook()` from
+`@clerk/nextjs/webhooks` (reads `CLERK_WEBHOOK_SIGNING_SECRET`), then on `user.created` /
+`user.updated` upserts `clerk_user_id`, primary email, and name via
+`INSERT ... ON CONFLICT (clerk_user_id) DO UPDATE` (idempotent), and on `user.deleted`
+removes the row (owned data cascades). Unhandled event types are acknowledged with 200 so
+Clerk does not retry. This is the bridge that makes `getDbUser()` resolve a row for a signed-in
+user.
+
 Core columns (indicative; finalized above):
 
 - **exercises**: `id`, `owner_user_id` (nullable → shared), `name`, `primary_muscle_group_id`,
