@@ -361,6 +361,27 @@ resume links + completed/abandoned list) and `/history/[id]` (read-only session 
 per-exercise working-set count and volume). Historical records are presented as actual results,
 visually distinct from planned targets.
 
+### Visual design system (brand pass)
+
+Brand essence: **quiet strength, measurable progress, no distractions.** Dark-first with a
+sophisticated light mode. A token layer in `app/globals.css` (`:root`, overridden under
+`prefers-color-scheme: light`) defines everything so screens stay consistent and restyling is
+centralized:
+
+- **Palette:** deep graphite / near-black background (`--bg #0c0d0e`), matte raised surfaces
+  (`--surface`), fine borders (`--border`), off-white text (`--text #f4f5f3`) with muted/dim/
+  faint steps. **One restrained electric-lime accent** (`--accent #c8ff3c`, deepened to
+  `#86b300` in light mode) reserved for the primary action and progress — never decorative.
+- **Material:** matte surfaces, fine 1px borders, minimal depth. No gloss, gradients,
+  glassmorphism, or neon glow.
+- **Typography:** system sans with strong hierarchy; **tabular numerals** on all metrics
+  (`font-variant-numeric: tabular-nums`) for instrument-like column alignment.
+- **Landing page (`/`):** the showcase for the system — wordmark + hairline header, eyebrow
+  label, large tight hero, an instrument-style stat band (sample volume / working sets /
+  +% vs previous), a crisp hairline feature list, and a single lime CTA (auth-aware via
+  server-side `auth()`). The app screens (dashboard/exercises/templates/train/history) inherit
+  the tokens now; a fuller per-screen layout polish is a later pass.
+
 ### Offline + sync design
 
 - **Local store:** IndexedDB object stores mirroring sessions, session_exercises, sets, plus a

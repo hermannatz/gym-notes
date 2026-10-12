@@ -1,5 +1,63 @@
+/* =========================================================================
+   Design tokens — "Quiet strength. Measurable progress. No distractions."
+   Deep graphite foundation, one restrained electric-lime accent, matte
+   surfaces, fine borders, precise numeric legibility. Dark-first with a
+   sophisticated light mode behind prefers-color-scheme.
+   ========================================================================= */
 :root {
-  color-scheme: light dark;
+  color-scheme: dark light;
+
+  /* Graphite / neutral scale (dark-first defaults) */
+  --bg: #0c0d0e; /* near-black page */
+  --surface: #141618; /* raised matte surface */
+  --surface-2: #1a1d1f; /* nested surface */
+  --border: #26282b; /* fine border */
+  --border-strong: #3a3d41; /* ghost-button / divider */
+  --hairline: #1d1f22; /* subtle list divider */
+
+  --text: #f4f5f3; /* off-white primary */
+  --text-muted: #a4a8ad; /* secondary */
+  --text-dim: #6b6f74; /* tertiary / labels */
+  --text-faint: #50545a; /* footnotes */
+
+  /* Single restrained accent — action, energy, progress */
+  --accent: #c8ff3c;
+  --accent-ink: #0c0d0e; /* text on the accent */
+
+  --danger: #ff6b6b;
+  --danger-bg: rgba(255, 107, 107, 0.1);
+  --success: var(--accent);
+
+  /* Typography */
+  --font-sans:
+    -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Helvetica, Arial,
+    sans-serif;
+  --num: 'tabular-nums' 1; /* precise numeric alignment */
+
+  /* Radii & spacing */
+  --radius: 0.75rem;
+  --radius-sm: 0.5rem;
+  --tap: 2.75rem; /* min touch target */
+}
+
+@media (prefers-color-scheme: light) {
+  :root {
+    --bg: #f4f5f3;
+    --surface: #ffffff;
+    --surface-2: #f0f1ee;
+    --border: #e2e4df;
+    --border-strong: #cfd2cb;
+    --hairline: #e8eae5;
+
+    --text: #0c0d0e;
+    --text-muted: #4a4e52;
+    --text-dim: #70747a;
+    --text-faint: #9aa0a6;
+
+    /* Slightly deepened lime so it stays legible on light surfaces */
+    --accent: #86b300;
+    --accent-ink: #ffffff;
+  }
 }
 
 * {
@@ -10,10 +68,18 @@ html,
 body {
   margin: 0;
   padding: 0;
-  font-family:
-    -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Helvetica, Arial,
-    sans-serif;
+  font-family: var(--font-sans);
   line-height: 1.5;
+  background: var(--bg);
+  color: var(--text);
+  -webkit-font-smoothing: antialiased;
+}
+
+/* Numeric legibility: metrics align in columns like an instrument */
+.num,
+.set-table td,
+.set-table input[type='number'] {
+  font-variant-numeric: tabular-nums;
 }
 
 /* Mobile-first layout primitives */
@@ -38,12 +104,13 @@ body {
 }
 
 .exercise-item {
-  border: 1px solid rgba(128, 128, 128, 0.3);
-  border-radius: 0.75rem;
+  border: 1px solid var(--border);
+  border-radius: var(--radius);
   padding: 0.75rem 1rem;
   display: flex;
   flex-direction: column;
   gap: 0.15rem;
+  background: var(--surface);
 }
 
 .exercise-item .name {
@@ -53,16 +120,20 @@ body {
 
 .exercise-item .meta {
   font-size: 0.85rem;
-  opacity: 0.75;
+  color: var(--text-dim);
 }
 
 .badge {
   display: inline-block;
-  font-size: 0.7rem;
-  padding: 0.1rem 0.45rem;
+  font-size: 0.65rem;
+  font-weight: 600;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  padding: 0.1rem 0.5rem;
   border-radius: 999px;
-  border: 1px solid rgba(128, 128, 128, 0.4);
-  margin-left: 0.4rem;
+  border: 1px solid var(--border-strong);
+  color: var(--text-dim);
+  margin-left: 0.5rem;
   vertical-align: middle;
 }
 
@@ -89,51 +160,63 @@ button {
 .field input,
 .field select,
 .field textarea {
-  min-height: 2.75rem;
+  min-height: var(--tap);
   padding: 0.5rem 0.75rem;
-  border: 1px solid rgba(128, 128, 128, 0.4);
-  border-radius: 0.5rem;
-  background: transparent;
-  color: inherit;
+  border: 1px solid var(--border-strong);
+  border-radius: var(--radius-sm);
+  background: var(--surface);
+  color: var(--text);
+}
+
+.field input:focus,
+.field select:focus,
+.field textarea:focus,
+.set-table input:focus {
+  outline: none;
+  border-color: var(--accent);
 }
 
 .btn {
-  min-height: 2.75rem;
-  padding: 0.6rem 1rem;
-  border-radius: 0.5rem;
-  border: none;
-  background: #2563eb;
-  color: #fff;
-  font-weight: 600;
+  min-height: var(--tap);
+  padding: 0.6rem 1.1rem;
+  border-radius: var(--radius-sm);
+  border: 1px solid transparent;
+  background: var(--accent);
+  color: var(--accent-ink);
+  font-weight: 700;
+  letter-spacing: 0.01em;
   cursor: pointer;
 }
 
 .btn:disabled {
-  opacity: 0.6;
+  opacity: 0.45;
   cursor: default;
 }
 
 .btn-secondary {
   background: transparent;
-  color: inherit;
-  border: 1px solid rgba(128, 128, 128, 0.4);
+  color: var(--text);
+  border: 1px solid var(--border-strong);
+  font-weight: 600;
 }
 
 .notice {
   padding: 0.6rem 0.9rem;
-  border-radius: 0.5rem;
+  border-radius: var(--radius-sm);
   margin-bottom: 0.75rem;
   font-size: 0.9rem;
 }
 
 .notice-error {
-  background: rgba(220, 38, 38, 0.12);
-  border: 1px solid rgba(220, 38, 38, 0.4);
+  background: var(--danger-bg);
+  border: 1px solid var(--danger);
+  color: var(--text);
 }
 
 .notice-success {
-  background: rgba(22, 163, 74, 0.12);
-  border: 1px solid rgba(22, 163, 74, 0.4);
+  background: rgba(200, 255, 60, 0.1);
+  border: 1px solid var(--accent);
+  color: var(--text);
 }
 
 /* Dashboard navigation cards */
@@ -154,17 +237,18 @@ button {
   display: flex;
   flex-direction: column;
   gap: 0.2rem;
-  padding: 1rem;
-  border: 1px solid rgba(128, 128, 128, 0.3);
-  border-radius: 0.75rem;
+  padding: 1.1rem;
+  border: 1px solid var(--border);
+  border-radius: var(--radius);
+  background: var(--surface);
   text-decoration: none;
-  color: inherit;
+  color: var(--text);
   min-height: 4.5rem;
   justify-content: center;
 }
 
 .dashboard-card:not(.dashboard-card-disabled):active {
-  background: rgba(37, 99, 235, 0.08);
+  border-color: var(--accent);
 }
 
 .dashboard-card-title {
@@ -174,7 +258,7 @@ button {
 
 .dashboard-card-sub {
   font-size: 0.85rem;
-  opacity: 0.7;
+  color: var(--text-dim);
 }
 
 .dashboard-card-disabled {
@@ -188,10 +272,12 @@ button {
 }
 
 .set-table th {
-  font-size: 0.75rem;
+  font-size: 0.7rem;
   font-weight: 600;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
   text-align: left;
-  opacity: 0.7;
+  color: var(--text-dim);
   padding: 0.25rem 0.3rem;
 }
 
@@ -204,10 +290,10 @@ button {
   width: 100%;
   min-height: 2.5rem;
   padding: 0.4rem 0.5rem;
-  border: 1px solid rgba(128, 128, 128, 0.4);
+  border: 1px solid var(--border-strong);
   border-radius: 0.4rem;
-  background: transparent;
-  color: inherit;
+  background: var(--surface-2);
+  color: var(--text);
   font-size: 1.05rem;
   text-align: center;
 }
@@ -215,15 +301,174 @@ button {
 .set-table input[type='checkbox'] {
   width: 1.5rem;
   height: 1.5rem;
+  accent-color: var(--accent);
 }
 
 .set-table td:first-child {
   width: 1.5rem;
   text-align: center;
-  opacity: 0.7;
+  color: var(--text-dim);
 }
 
 .btn-small {
   min-height: 2.2rem;
   padding: 0.3rem 0.6rem;
+}
+
+/* =========================================================================
+   Public landing page
+   ========================================================================= */
+.landing {
+  max-width: 680px;
+  margin: 0 auto;
+  padding: 1.25rem 1.5rem 3rem;
+}
+
+.landing-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding-bottom: 1rem;
+  border-bottom: 1px solid var(--border);
+}
+
+.landing-wordmark {
+  font-size: 0.95rem;
+  font-weight: 800;
+  letter-spacing: 0.04em;
+}
+
+.landing-version {
+  font-size: 0.75rem;
+  color: var(--text-dim);
+  letter-spacing: 0.12em;
+}
+
+.landing-eyebrow {
+  margin: 3rem 0 0.75rem;
+  font-size: 0.7rem;
+  font-weight: 600;
+  letter-spacing: 0.28em;
+  color: var(--accent);
+}
+
+.landing-hero {
+  font-size: clamp(2.25rem, 10vw, 3rem);
+  font-weight: 800;
+  letter-spacing: -0.03em;
+  line-height: 1.05;
+  margin: 0;
+}
+
+.landing-hero .dim {
+  color: var(--text-dim);
+}
+
+.landing-sub {
+  margin: 1.25rem 0 0;
+  font-size: 1rem;
+  color: var(--text-muted);
+  max-width: 32ch;
+}
+
+.landing-cta {
+  display: flex;
+  gap: 0.75rem;
+  margin-top: 1.75rem;
+  flex-wrap: wrap;
+}
+
+.landing-cta .btn {
+  text-decoration: none;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  padding: 0.8rem 1.4rem;
+}
+
+/* Instrument-style stat band */
+.stat-band {
+  margin-top: 2.5rem;
+  padding: 1.1rem 1.25rem;
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: var(--radius);
+}
+
+.stat-band-label {
+  font-size: 0.65rem;
+  letter-spacing: 0.18em;
+  color: var(--text-dim);
+}
+
+.stat-row {
+  display: flex;
+  gap: 1.5rem;
+  margin-top: 0.9rem;
+  flex-wrap: wrap;
+}
+
+.stat {
+  display: flex;
+  flex-direction: column;
+}
+
+.stat-value {
+  font-size: 1.6rem;
+  font-weight: 700;
+  font-variant-numeric: tabular-nums;
+  line-height: 1;
+}
+
+.stat-value.accent {
+  color: var(--accent);
+}
+
+.stat-key {
+  margin-top: 0.3rem;
+  font-size: 0.62rem;
+  letter-spacing: 0.1em;
+  color: var(--text-dim);
+}
+
+/* Feature list — crisp hairline rows */
+.landing-section-label {
+  margin: 2.75rem 0 0;
+  font-size: 0.7rem;
+  font-weight: 600;
+  letter-spacing: 0.2em;
+  color: var(--text-dim);
+}
+
+.feature-list {
+  list-style: none;
+  margin: 0.75rem 0 0;
+  padding: 0;
+  border-top: 1px solid var(--hairline);
+}
+
+.feature-row {
+  display: flex;
+  align-items: baseline;
+  justify-content: space-between;
+  gap: 1rem;
+  padding: 0.9rem 0;
+  border-bottom: 1px solid var(--hairline);
+}
+
+.feature-name {
+  font-weight: 600;
+  font-size: 1rem;
+}
+
+.feature-desc {
+  font-size: 0.9rem;
+  color: var(--text-dim);
+  text-align: right;
+}
+
+.landing-footer {
+  margin-top: 2.5rem;
+  font-size: 0.75rem;
+  color: var(--text-faint);
 }
