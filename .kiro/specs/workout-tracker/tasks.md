@@ -83,9 +83,14 @@ and building green, and until their scope is confirmed.
     training_sessions, session_exercises, workout_sets, sync_change_log). Seed muscle groups.
   - _Requirements: 4.1, 4.2, 6.1, 8.*, 9.*, 10.1, 11.3_
 
-- [ ] 9. Milestone 2 — Exercise library (API + UI)
+- [x] 9. Milestone 2 — Exercise library (API + UI)
   - CRUD for shared/personal exercises following the API convention; data-driven muscle groups.
-  - _Requirements: 4.1, 4.2, 4.3, 2.*, 13.1_
+  - Routes: `GET /api/muscle-groups`; `GET`/`POST /api/exercises`;
+    `GET`/`PATCH`/`DELETE /api/exercises/[id]` (soft-delete via is_archived).
+  - Ownership enforced in SQL (shared OR owner = user); foreign access returns 404 (no leak).
+  - Mobile-first `/exercises` page: list + add form, muscle groups from the API.
+  - 22 tests incl. cross-user denial; queries validated against Postgres 16.
+  - _Requirements: 4.1, 4.2, 4.3, 2.*, 13.1, 13.4_
 
 - [ ] 10. Milestone 3 — Templates (API + UI)
   - Create/rename/duplicate/edit/archive templates; add/reorder exercises; targets;

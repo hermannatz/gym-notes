@@ -265,6 +265,24 @@ Core columns (indicative; finalized above):
 Ownership is enforced in every query (`WHERE owner_user_id = ${user.id}`); the client-supplied
 user id is never trusted.
 
+### Exercise library API (Milestone 2, implemented)
+
+- `GET /api/muscle-groups` — seeded taxonomy, so the frontend never hardcodes muscle names.
+- `GET /api/exercises` — lists shared (`owner_user_id IS NULL`) plus the caller's personal
+  exercises, excluding archived; joins the primary muscle-group name.
+- `POST /api/exercises` — creates a personal exercise; `owner_user_id` is taken from the
+  authenticated user, never the request body (a spoofed `owner_user_id` is ignored).
+- `GET` / `PATCH` / `DELETE /api/exercises/[id]` — single-exercise read/update/soft-delete.
+  **Authorization is enforced in the SQL `WHERE` clause** (`owner_user_id = ${user.id}` for
+  mutations; shared-or-owned for reads). A row the caller may not touch simply matches
+  nothing, so the handler returns **404 rather than 403** — this avoids leaking the existence
+  of other users' private exercises. DELETE is a soft-delete (`is_archived = TRUE`) so
+  templates/sessions that reference the exercise stay intact.
+- **UI:** mobile-first `/exercises` page (client component) that lists exercises and adds a
+  personal one, with muscle-group options loaded from `GET /api/muscle-groups`.
+- Cross-user denial is covered by tests and additionally validated at the SQL level against
+  Postgres 16.
+
 ### Offline + sync design
 
 - **Local store:** IndexedDB object stores mirroring sessions, session_exercises, sets, plus a
