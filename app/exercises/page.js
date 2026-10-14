@@ -98,7 +98,7 @@ export default function ExercisesPage() {
 
   return (
     <main className="container">
-      <h1 className="page-title">Exercise Library</h1>
+      <header className="page-header"><p className="eyebrow">Movement library</p><h1 className="page-title">Exercises</h1><p className="page-lead">Shared essentials and your personal movements.</p></header>
 
       {error && (
         <div className="notice notice-error" role="alert">
@@ -111,7 +111,9 @@ export default function ExercisesPage() {
         </div>
       )}
 
-      <form onSubmit={handleSubmit} aria-label="Add exercise">
+      <details className="create-drawer">
+        <summary>+ Add a personal exercise</summary>
+      <form onSubmit={handleSubmit} aria-label="Add exercise" className="form-panel nested">
         <div className="field">
           <label htmlFor="name">Name</label>
           <input
@@ -157,10 +159,9 @@ export default function ExercisesPage() {
           {submitting ? 'Adding…' : 'Add exercise'}
         </button>
       </form>
+      </details>
 
-      <h2 className="page-title" style={{ fontSize: '1.1rem', marginTop: '1.5rem' }}>
-        Exercises
-      </h2>
+      <div className="section-heading"><div><p className="eyebrow">Available</p><h2>All exercises</h2></div><span className="count-badge">{exercises.length}</span></div>
 
       {loading ? (
         <p>Loading…</p>

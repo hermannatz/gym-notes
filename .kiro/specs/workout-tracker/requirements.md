@@ -310,6 +310,13 @@ feels like a dedicated workout tool during training.
 5. WHEN the UI is built THEN it SHALL use accessible semantic markup, keyboard navigation where
    applicable, and sufficient contrast.
 
+**Current implementation note:** The authenticated application now uses a persistent
+mobile navigation shell outside the focused live-session route. The live recorder keeps
+set inputs and completion controls thumb-accessible, shows previous performance without an
+extra tap, provides visible save/error feedback, and keeps the finish action in a safe-area
+aware sticky footer. Offline/synchronization status remains Milestone 6 work and is not
+represented as implemented.
+
 ### Requirement 13: Security and data integrity
 
 **User Story:** As a user, I want my data validated, authorized, and protected, so that it
