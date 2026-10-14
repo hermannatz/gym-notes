@@ -1,5 +1,6 @@
 import {
   isWorkingSet,
+  convertWeight,
   setVolume,
   totalVolume,
   workingSetCount,
@@ -28,6 +29,17 @@ describe('training metrics', () => {
     const sets = [working, warmup, incomplete, { ...working, reps: 3 }];
     // 100*5 + 0 + 0 + 100*3 = 800
     expect(totalVolume(sets)).toBe(800);
+  });
+
+  it('converts pounds and normalizes mixed-unit volume to kilograms', () => {
+    expect(convertWeight(220.46226218, 'lb', 'kg')).toBeCloseTo(100, 8);
+    expect(convertWeight(100, 'kg', 'lb')).toBeCloseTo(220.46226218, 8);
+
+    const sets = [
+      { ...working, weight: 100, reps: 1, weight_unit: 'kg' },
+      { ...working, weight: 220.46226218, reps: 1, weight_unit: 'lb' },
+    ];
+    expect(totalVolume(sets, 'kg')).toBeCloseTo(200, 8);
   });
 
   it('counts working sets', () => {

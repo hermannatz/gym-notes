@@ -11,18 +11,30 @@ export function isWorkingSet(set) {
   return set.completed === true && set.set_type !== 'warmup';
 }
 
-/** Volume contribution of a single set (0 unless it is a counted working set). */
-export function setVolume(set) {
+const POUNDS_PER_KILOGRAM = 2.2046226218;
+
+/** Convert a weight between supported units without changing the stored value. */
+export function convertWeight(weight, fromUnit = 'kg', toUnit = 'kg') {
+  const value = Number(weight);
+  if (!Number.isFinite(value)) return 0;
+  if (fromUnit === toUnit) return value;
+  if (fromUnit === 'lb' && toUnit === 'kg') return value / POUNDS_PER_KILOGRAM;
+  if (fromUnit === 'kg' && toUnit === 'lb') return value * POUNDS_PER_KILOGRAM;
+  return 0;
+}
+
+/** Volume contribution in the requested unit (kg by default). */
+export function setVolume(set, targetUnit = 'kg') {
   if (!isWorkingSet(set)) return 0;
-  const weight = Number(set.weight);
+  const weight = convertWeight(set.weight, set.weight_unit ?? 'kg', targetUnit);
   const reps = Number(set.reps);
   if (!Number.isFinite(weight) || !Number.isInteger(reps)) return 0;
   return weight * reps;
 }
 
-/** Total working volume across an array of sets. */
-export function totalVolume(sets = []) {
-  return sets.reduce((sum, s) => sum + setVolume(s), 0);
+/** Total working volume across an array of sets, normalized to one unit. */
+export function totalVolume(sets = [], targetUnit = 'kg') {
+  return sets.reduce((sum, s) => sum + setVolume(s, targetUnit), 0);
 }
 
 /** Count of completed working sets. */

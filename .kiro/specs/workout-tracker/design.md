@@ -318,7 +318,9 @@ user id is never trusted.
   issues one scoped `UPDATE ... SET position = index` per id inside a single `sql.transaction()`
   (lazy `NeonQueryPromise` descriptors), so the reorder is all-or-nothing.
 - **UI:** `/templates` (list, create, duplicate, archive) and `/templates/[id]` (rename on
-  blur, add exercise from the library, up/down reorder, remove, target sets). Mobile-first;
+  blur, add exercise from the library, up/down reorder, remove, and edit target sets, rep
+  range, weight, and rest seconds). Mutation failures remain visible instead of being hidden
+  by an unconditional reload. Mobile-first;
   reorder uses up/down buttons rather than drag-drop for touch reliability.
 - Cross-user denial covered by tests and validated at the SQL level against Postgres 16.
 
@@ -337,6 +339,8 @@ user id is never trusted.
   `DELETE` removes the session (cascades to exercises/sets).
 - `POST /api/sessions/[id]/exercises` — add an exercise mid-session (visible-exercise check);
   `PATCH [seId]` skip/unskip or reposition; `DELETE [seId]` remove (cascades to its sets).
+  All session mutations require an owned `in_progress` parent; completed/abandoned history is
+  immutable. Nested set mutations also scope the set to the session id present in the URL.
 - `GET /api/sessions/[id]/exercises/[seId]/previous` — **previous performance**: the most
   recent other session (any status) containing the same exercise, with that session's sets, for
   side-by-side comparison. `{ previous: null }` when there is no history.
@@ -355,7 +359,8 @@ user id is never trusted.
 History is a UI layer over the existing sessions API — no new routes or migration. `GET
 /api/sessions` (with `?status=`) powers the list; `GET /api/sessions/[id]` powers the detail
 view. A shared `app/lib/metrics.js` defines the working-volume rule in one place (only
-completed, non-warm-up sets count; volume = weight × reps), unit-tested, and reused by history
+completed, non-warm-up sets count; weights are converted to one display unit before volume is
+summed), unit-tested, and reused by history
 summaries now and analytics later (Milestone 8). UI: `/history` (unfinished sessions with
 resume links + completed/abandoned list) and `/history/[id]` (read-only session detail with
 per-exercise working-set count and volume). Historical records are presented as actual results,

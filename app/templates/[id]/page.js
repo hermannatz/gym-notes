@@ -52,15 +52,34 @@ export default function TemplateEditorPage({ params }) {
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [id]);
 
+  async function mutation(url, options, fallbackMessage) {
+    try {
+      const res = await fetch(url, options);
+      if (!res.ok) {
+        const data = await res.json().catch(() => ({}));
+        setError(data.error || fallbackMessage);
+        return false;
+      }
+      setError(null);
+      return true;
+    } catch {
+      setError(fallbackMessage);
+      return false;
+    }
+  }
+
   async function rename() {
     const trimmed = name.trim();
-    if (!trimmed) return;
-    await fetch(`/api/templates/${id}`, {
+    if (!trimmed) {
+      setError('Template name is required.');
+      return;
+    }
+    const ok = await mutation(`/api/templates/${id}`, {
       method: 'PATCH',
       headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify({ name: trimmed }),
-    });
-    await load();
+    }, 'Could not rename the template.');
+    if (ok) await load();
   }
 
   async function addExercise(e) {
@@ -71,16 +90,12 @@ export default function TemplateEditorPage({ params }) {
     }
     const body = { exercise_id: selectedExercise };
     if (targetSets) body.target_sets = Number(targetSets);
-    const res = await fetch(`/api/templates/${id}/exercises`, {
+    const ok = await mutation(`/api/templates/${id}/exercises`, {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify(body),
-    });
-    if (!res.ok) {
-      const data = await res.json().catch(() => ({}));
-      setError(data.error || 'Could not add exercise.');
-      return;
-    }
+    }, 'Could not add exercise.');
+    if (!ok) return;
     setSelectedExercise('');
     setTargetSets('');
     setError(null);
@@ -88,10 +103,10 @@ export default function TemplateEditorPage({ params }) {
   }
 
   async function removeExercise(teId) {
-    await fetch(`/api/templates/${id}/exercises/${teId}`, {
+    const ok = await mutation(`/api/templates/${id}/exercises/${teId}`, {
       method: 'DELETE',
-    });
-    await load();
+    }, 'Could not remove the exercise.');
+    if (ok) await load();
   }
 
   async function move(index, direction) {
@@ -100,12 +115,44 @@ export default function TemplateEditorPage({ params }) {
     if (swapWith < 0 || swapWith >= items.length) return;
     [items[index], items[swapWith]] = [items[swapWith], items[index]];
     const order = items.map((it) => it.id);
-    await fetch(`/api/templates/${id}/exercises/order`, {
+    const ok = await mutation(`/api/templates/${id}/exercises/order`, {
       method: 'PUT',
       headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify({ order }),
-    });
-    await load();
+    }, 'Could not reorder the exercises.');
+    if (ok) await load();
+  }
+
+  async function saveTargets(e, teId) {
+    e.preventDefault();
+    const form = new FormData(e.currentTarget);
+    const optionalNumber = (key) => {
+      const value = form.get(key);
+      return value === '' ? null : Number(value);
+    };
+    const targetRepMin = optionalNumber('target_rep_min');
+    const targetRepMax = optionalNumber('target_rep_max');
+    if (
+      targetRepMin !== null &&
+      targetRepMax !== null &&
+      targetRepMin > targetRepMax
+    ) {
+      setError('Minimum reps cannot be greater than maximum reps.');
+      return;
+    }
+
+    const ok = await mutation(`/api/templates/${id}/exercises/${teId}`, {
+      method: 'PATCH',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({
+        target_sets: optionalNumber('target_sets'),
+        target_rep_min: targetRepMin,
+        target_rep_max: targetRepMax,
+        target_weight: optionalNumber('target_weight'),
+        rest_seconds: optionalNumber('rest_seconds'),
+      }),
+    }, 'Could not save exercise targets.');
+    if (ok) await load();
   }
 
   if (loading) {
@@ -163,10 +210,46 @@ export default function TemplateEditorPage({ params }) {
                 {[
                   te.primary_muscle_group,
                   te.target_sets ? `${te.target_sets} sets` : null,
+                  te.target_rep_min !== null || te.target_rep_max !== null
+                    ? `${te.target_rep_min ?? '–'}–${te.target_rep_max ?? '–'} reps`
+                    : null,
+                  te.target_weight !== null ? `${te.target_weight} kg target` : null,
+                  te.rest_seconds !== null ? `${te.rest_seconds}s rest` : null,
                 ]
                   .filter(Boolean)
                   .join(' · ')}
               </span>
+              <form
+                onSubmit={(e) => saveTargets(e, te.id)}
+                aria-label={`Targets for ${te.exercise_name}`}
+                style={{ marginTop: '0.75rem' }}
+              >
+                <div className="template-target-grid">
+                  <label className="field">
+                    <span>Sets</span>
+                    <input name="target_sets" type="number" min="0" defaultValue={te.target_sets ?? ''} />
+                  </label>
+                  <label className="field">
+                    <span>Min reps</span>
+                    <input name="target_rep_min" type="number" min="0" defaultValue={te.target_rep_min ?? ''} />
+                  </label>
+                  <label className="field">
+                    <span>Max reps</span>
+                    <input name="target_rep_max" type="number" min="0" defaultValue={te.target_rep_max ?? ''} />
+                  </label>
+                  <label className="field">
+                    <span>Weight (kg)</span>
+                    <input name="target_weight" type="number" min="0" step="0.01" defaultValue={te.target_weight ?? ''} />
+                  </label>
+                  <label className="field">
+                    <span>Rest (seconds)</span>
+                    <input name="rest_seconds" type="number" min="0" defaultValue={te.rest_seconds ?? ''} />
+                  </label>
+                </div>
+                <button className="btn btn-secondary" type="submit">
+                  Save targets
+                </button>
+              </form>
               <div style={{ display: 'flex', gap: '0.5rem', marginTop: '0.5rem' }}>
                 <button
                   className="btn btn-secondary"

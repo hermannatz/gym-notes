@@ -19,12 +19,13 @@ Live: https://gym-notes-khaki.vercel.app
 
 ## Getting started
 
-**Prerequisites:** Node.js 18+ and accounts/credentials for Neon (Postgres) and
+**Prerequisites:** Node.js 22 LTS and accounts/credentials for Neon (Postgres) and
 Clerk (auth). Docker is optional but used to validate SQL locally.
 
 ```bash
-# 1. Install dependencies
-npm install
+# 1. Select the project's Node version and install locked dependencies
+nvm use
+npm ci
 
 # 2. Create your local env file from the template
 cp .env.example .env.local

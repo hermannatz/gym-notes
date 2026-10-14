@@ -221,6 +221,8 @@ results separately from planned targets.
    its exercises and sets, date, and workout type.
 2. WHEN viewing history THEN historical records SHALL be treated as actual results, distinct
    from planned targets, and unfinished sessions SHALL be resumable.
+3. WHEN a session is completed or abandoned THEN exercise and set mutation endpoints SHALL treat
+   its recorded results as immutable and return 404 for attempted nested writes.
 
 ### Requirement 8: Offline-first operation (later milestone, mandatory for MVP)
 

@@ -31,6 +31,7 @@ export async function POST(request, { params }) {
     const session = await sql`
       SELECT id FROM training_sessions
       WHERE id = ${id} AND owner_user_id = ${user.id}
+        AND status = 'in_progress'
     `;
     if (!session[0]) {
       return Response.json({ error: 'Not found' }, { status: 404 });

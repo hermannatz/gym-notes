@@ -129,6 +129,13 @@ and building green, and until their scope is confirmed.
   - 5 new metrics tests (77 total).
   - _Requirements: 7.1, 7.2, 6.4_
 
+- [x] 12.1 Onboarding maintenance and integrity hardening
+  - Standardize local development on Node.js 22 LTS (`engines`, `.nvmrc`, README).
+  - Enforce immutable completed/abandoned sessions and complete nested URL scoping in SQL.
+  - Normalize mixed kg/lb history volume to kilograms before summing.
+  - Surface template mutation failures and expose all existing exercise target fields.
+  - Add regression tests for status guards, URL hierarchy, and unit conversion.
+
 - [ ] 13. Milestone 6 — Offline persistence + PWA shell
   - IndexedDB local store (UUID IDs, pending-changes queue); service worker + manifest; install
     to Home Screen; durable write path; sync-status UI.

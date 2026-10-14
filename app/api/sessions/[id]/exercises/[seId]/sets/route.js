@@ -53,7 +53,7 @@ export async function POST(request, { params }) {
       SELECT se.id FROM session_exercises se
       JOIN training_sessions s ON s.id = se.session_id
       WHERE se.id = ${seId} AND se.session_id = ${id}
-        AND s.owner_user_id = ${user.id}
+        AND s.owner_user_id = ${user.id} AND s.status = 'in_progress'
     `;
     if (!owned[0]) {
       return Response.json({ error: 'Not found' }, { status: 404 });
