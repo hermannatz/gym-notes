@@ -56,6 +56,12 @@ export default async function DashboardPage() {
           <span><span className="dashboard-card-title">Exercise Library</span>
           <span className="dashboard-card-sub">Browse and add movements</span></span>
         </Link>
+
+        <Link className="dashboard-card" href="/progress">
+          <span className="dashboard-card-index">04</span>
+          <span><span className="dashboard-card-title">Progress</span>
+          <span className="dashboard-card-sub">Volume and progression trends</span></span>
+        </Link>
       </nav>
     </main>
   );

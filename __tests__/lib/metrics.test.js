@@ -4,6 +4,9 @@ import {
   setVolume,
   totalVolume,
   workingSetCount,
+  muscleAttributionFactor,
+  PRIMARY_MUSCLE_FACTOR,
+  SECONDARY_MUSCLE_FACTOR,
 } from '@/app/lib/metrics.js';
 
 describe('training metrics', () => {
@@ -49,5 +52,19 @@ describe('training metrics', () => {
   it('handles empty input', () => {
     expect(totalVolume()).toBe(0);
     expect(workingSetCount()).toBe(0);
+  });
+});
+
+describe('muscle attribution', () => {
+  it('credits the primary muscle at full and secondary at a reduced share', () => {
+    expect(muscleAttributionFactor('primary')).toBe(PRIMARY_MUSCLE_FACTOR);
+    expect(muscleAttributionFactor('secondary')).toBe(SECONDARY_MUSCLE_FACTOR);
+    expect(PRIMARY_MUSCLE_FACTOR).toBe(1);
+    expect(SECONDARY_MUSCLE_FACTOR).toBe(0.5);
+  });
+
+  it('treats any non-primary role as secondary', () => {
+    expect(muscleAttributionFactor('synergist')).toBe(SECONDARY_MUSCLE_FACTOR);
+    expect(muscleAttributionFactor(undefined)).toBe(SECONDARY_MUSCLE_FACTOR);
   });
 });

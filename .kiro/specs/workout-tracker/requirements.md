@@ -354,7 +354,16 @@ training loop.
 
 ## Definition of MVP success
 
-The MVP succeeds when a user can install the web app on an iPhone, select a workout template,
-record an entire training session offline, close and reopen the app without losing data,
-synchronize the session when connectivity returns, and review the recorded performance
-afterward.
+> **Scope note (2026-10-15):** delivery is split into two stages. The **online MVP** (near-term
+> goal) delivers the full training loop with analytics, settings, and security hardening, usable
+> wherever there is connectivity. The **full MVP** below adds offline operation and sync, which
+> are deferred — not dropped — to a subsequent stage. See the scope decision in `tasks.md`.
+
+**Online MVP (near-term):** a user can sign in on their phone, create and manage workout
+templates and exercises, record a complete training session with per-set weight/reps, compare
+against previous performance, review history with volume metrics, and see basic progress
+analytics — all while online.
+
+**Full MVP (deferred offline stage):** the user can additionally install the web app on an
+iPhone, record an entire training session offline, close and reopen the app without losing data,
+synchronize the session when connectivity returns, and review the recorded performance afterward.

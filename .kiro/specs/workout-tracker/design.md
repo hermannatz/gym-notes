@@ -416,12 +416,26 @@ centralized:
 - **Durability guarantee:** a failed sync leaves IndexedDB untouched; nothing is deleted until
   the server acknowledges.
 
-### Analytics foundation
+### Analytics foundation (Milestone 8, implemented)
 
-Working volume = sum over completed, non-warm-up sets. Muscle-group volume attributes full
-credit to the primary muscle group and fractional credit to secondaries (ratio documented in
-the analytics task), avoiding counting every set as full volume everywhere. All metrics are
-derived from `workout_sets` at query time; no authoritative aggregate tables in the MVP.
+Working volume = sum over completed, non-warm-up sets, with each weight normalized to kg
+(lb→kg) before `weight × reps` so mixed-unit sessions total correctly. Muscle-group volume
+attributes **full** credit to the exercise's primary muscle (`exercises.primary_muscle_group_id`)
+and **0.5** credit to each secondary (`exercise_muscles`, role ≠ primary), avoiding counting
+every set as full volume for every muscle it touches. These factors are documented and
+single-sourced in `app/lib/metrics.js` (`PRIMARY_MUSCLE_FACTOR` / `SECONDARY_MUSCLE_FACTOR`);
+0.5 is a tunable convention. All metrics are derived from `workout_sets` at query time via CTEs
++ `UNION ALL`; no authoritative aggregate tables.
+
+Endpoints (ownership-scoped to the caller):
+- `GET /api/analytics/volume-by-muscle?weeks=N` (default 8, max 52) — weekly volume per muscle
+  group across the window.
+- `GET /api/analytics/exercise/[exerciseId]` — per-session volume and top working set for one
+  exercise (visibility-checked: shared or owned, else 404).
+
+UI: `/progress` — ranked volume-by-muscle bars and an exercise-progression table, linked from
+the dashboard. Both queries validated against Postgres 16 (unit normalization, warm-up/incomplete
+exclusion, primary+secondary attribution, and cross-user isolation all confirmed).
 
 ### PWA / UX
 

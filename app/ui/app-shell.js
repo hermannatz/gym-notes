@@ -11,6 +11,10 @@ const items = [
   { href: '/exercises', label: 'Exercises', icon: 'exercises' },
 ];
 
+// App pages that use the shell/header but are not in the bottom nav
+// (reached from the dashboard), kept out of the 5-item mobile bar.
+const extraAppPaths = ['/progress'];
+
 function NavIcon({ name }) {
   const paths = {
     home: <><path d="M3 10.5 12 3l9 7.5" /><path d="M5.5 9.5V21h13V9.5M9 21v-7h6v7" /></>,
@@ -29,7 +33,9 @@ function NavIcon({ name }) {
 
 export default function AppShell({ children }) {
   const pathname = usePathname();
-  const isApp = items.some(({ href }) => pathname === href || pathname.startsWith(`${href}/`));
+  const isApp =
+    items.some(({ href }) => pathname === href || pathname.startsWith(`${href}/`)) ||
+    extraAppPaths.some((href) => pathname === href || pathname.startsWith(`${href}/`));
   const isLiveSession = /^\/train\/[^/]+$/.test(pathname);
 
   if (!isApp) return children;

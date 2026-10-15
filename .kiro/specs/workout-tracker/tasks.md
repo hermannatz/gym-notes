@@ -1,5 +1,14 @@
 # Implementation Plan — Offline-First Workout Tracker
 
+> **Scope decision (2026-10-15): offline deferred, not dropped.** The near-term goal is
+> a shippable **online-first MVP**. Milestones 6 (offline persistence/PWA) and 7 (sync
+> engine) are intentionally deferred until the online product is complete and polished,
+> because they are the most complex and hardest-to-reverse work and are lower-risk once
+> the data model and UI have settled. Offline remains the headline next-version feature
+> and the long-term definition of full MVP success (see "Definition of MVP success" in
+> requirements.md). Near-term order: **M8 Analytics → Settings + UX polish → M9 Security
+> hardening → PWA install (manifest/icons)**, then revisit offline (M6/M7).
+
 Milestone 0 is the only milestone scoped for immediate implementation. It is exactly the
 Prompt 1 foundation — no domain tables, routes, or UI. Later milestones are listed so the
 full roadmap is captured, but should not be started until Milestone 0 is installed, tested,
@@ -148,20 +157,33 @@ and building green, and until their scope is confirmed.
   - No new dependencies, schema changes, or claims of offline synchronization.
   - _Requirements: 5.2, 5.3, 5.5, 12.1, 12.2, 12.3, 12.5_
 
-- [ ] 13. Milestone 6 — Offline persistence + PWA shell
+- [ ] 13. Milestone 6 — Offline persistence + PWA shell  **(DEFERRED — post online-MVP)**
   - IndexedDB local store (UUID IDs, pending-changes queue); service worker + manifest; install
     to Home Screen; durable write path; sync-status UI.
+  - Deferred by the 2026-10-15 scope decision; the data model already uses client-generatable
+    UUIDs to keep this path open. (PWA install — manifest/icons — may be done earlier on its
+    own, independent of offline.)
   - _Requirements: 8.*, 12.1, 12.2, 12.3_
 
-- [ ] 14. Milestone 7 — Synchronization engine + idempotent endpoints
+- [ ] 14. Milestone 7 — Synchronization engine + idempotent endpoints  **(DEFERRED — post online-MVP)**
   - Idempotent sync endpoint (client_change_id ledger, UUID upserts); triggers on open/focus/
     online/manual; backoff; connectivity probe; documented conflict policy; server-side
     validation/authz. Tests: idempotent replay, out-of-order, failed-sync preserves local data.
+  - Deferred by the 2026-10-15 scope decision; `sync_change_log` table already exists for this.
   - _Requirements: 9.*, 13.3_
 
-- [ ] 15. Milestone 8 — Analytics foundation
+- [x] 15. Milestone 8 — Analytics foundation
   - Derived volume/progression queries; documented muscle-group attribution; unit-conversion
     correctness. Tests exclude warm-up/incomplete sets by default.
+  - Routes: `GET /api/analytics/volume-by-muscle?weeks=N` (weekly volume per muscle group,
+    primary full + secondary 0.5 credit, lb→kg normalized) and
+    `GET /api/analytics/exercise/[exerciseId]` (per-session volume + top set).
+  - Attribution factors documented and single-sourced in `app/lib/metrics.js`
+    (PRIMARY=1, SECONDARY=0.5); primary muscle from `exercises`, secondaries from
+    `exercise_muscles`, via UNION ALL. All derived at query time; no aggregate tables.
+  - UI: `/progress` page (volume-by-muscle bars + exercise progression table), linked from
+    the dashboard. Ownership scoped to the user; cross-user noise excluded (validated).
+  - 10 new tests (89 total); the two analytics queries validated against Postgres 16.
   - _Requirements: 10.1, 10.2, 10.3, 12.4_
 
 - [ ] 16. Milestone 9 — Security hardening + cross-user tests

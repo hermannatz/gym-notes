@@ -41,3 +41,19 @@ export function totalVolume(sets = [], targetUnit = 'kg') {
 export function workingSetCount(sets = []) {
   return sets.filter(isWorkingSet).length;
 }
+
+/**
+ * Muscle-group volume attribution (Req 10.2).
+ *
+ * A working set credits its exercise's PRIMARY muscle group at full weight and
+ * each SECONDARY muscle group at a reduced share, so a set is not naively
+ * counted as full volume for every muscle it touches. The secondary share is a
+ * documented, tunable convention — 0.5 is a common, defensible default.
+ */
+export const PRIMARY_MUSCLE_FACTOR = 1;
+export const SECONDARY_MUSCLE_FACTOR = 0.5;
+
+/** The attribution factor for a muscle's involvement role. */
+export function muscleAttributionFactor(role) {
+  return role === 'primary' ? PRIMARY_MUSCLE_FACTOR : SECONDARY_MUSCLE_FACTOR;
+}
