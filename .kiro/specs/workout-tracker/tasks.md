@@ -197,9 +197,17 @@ and building green, and until their scope is confirmed.
   - 8 new tests (97 total).
   - _Requirements: 12.4_
 
-- [ ] 16. Milestone 9 — Security hardening + cross-user tests
-  - Cross-user access-denial tests on every protected resource; account deletion/retention
-    policy; production transport and secret handling review.
+- [x] 16. Milestone 9 — Security hardening + cross-user tests
+  - Systematic cross-user denial audit (`__tests__/api/cross-user-access.test.js`): every
+    resource route returns 404 (not 403) for a non-owned resource — exercises, templates,
+    template-exercises, sessions, session-exercises, sets, analytics.
+  - Account deletion: `DELETE /api/account` deletes the local user row (cascades all owned
+    data) then the Clerk user; two-step confirm in Settings danger zone. Retention policy
+    documented in design.md (private by default, retained while account exists, immediate
+    irreversible deletion).
+  - Audit: all env access server-only; no secrets client-exposed; generic error responses
+    (no raw error/stack leak); HTTPS in prod.
+  - 23 new tests (120 total).
   - _Requirements: 11.2, 13.1, 13.4, 13.5_
 
 - [ ] 17. Manual acceptance (user-performed; agent cannot verify)

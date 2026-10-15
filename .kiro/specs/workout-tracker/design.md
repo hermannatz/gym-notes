@@ -397,6 +397,33 @@ centralized:
   restrained timeline; the live recorder uses high-legibility set rows and completion states.
   Motion is subtle and disabled through `prefers-reduced-motion`.
 
+### Security hardening & data policy (Milestone 9, implemented)
+
+**Authorization audit.** Every API route (21 handlers) calls `getDbUser()` and enforces
+ownership in SQL; the only unauthenticated route is the Clerk webhook, which verifies a Svix
+signature. A dedicated `__tests__/api/cross-user-access.test.js` asserts systematically that
+every resource route returns **404 (not 403)** for a resource the caller does not own — proving
+the no-existence-leak guarantee across exercises, templates, template-exercises, sessions,
+session-exercises, sets, and analytics in one auditable place (Req 13.4).
+
+**Secrets & transport.** All `process.env` access is server-only (`app/lib/db.js`,
+`app/lib/email.js`); the only client-exposed key is Clerk's publishable key (designed public).
+Error responses are generic (`Unauthorized` / `Internal server error`); details are logged
+server-side only, never echoed to clients. Production runs over HTTPS (Vercel) and secrets are
+host-provided env vars, never committed.
+
+**Account deletion & data retention (Req 13.5).** Users can delete their account from Settings
+(two-step confirmation) via `DELETE /api/account`:
+1. The local `users` row is deleted, which **cascades** to all owned records (templates,
+   personal exercises, sessions, session-exercises, sets) through `ON DELETE CASCADE`.
+2. The Clerk identity is removed via `clerkClient().users.deleteUser()`. If that call fails the
+   data is already gone and Clerk's `user.deleted` webhook reconciles the identity later.
+
+Retention policy: workout data is private by default and retained only while the account
+exists. Deletion is immediate and irreversible — no soft-delete/grace period in the MVP
+(a future enhancement could add a recovery window). Clerk is the system of record for identity
+and auth credentials; the app stores no passwords or tokens.
+
 ### Offline + sync design
 
 - **Local store:** IndexedDB object stores mirroring sessions, session_exercises, sets, plus a

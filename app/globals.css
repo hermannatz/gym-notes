@@ -775,3 +775,21 @@ button, a, input, select, summary { -webkit-tap-highlight-color: transparent; }
   opacity: 0.6;
   cursor: default;
 }
+
+/* Settings danger zone */
+.danger-zone {
+  margin-top: 2.5rem;
+  padding: 1.1rem 1.25rem;
+  border: 1px solid var(--danger);
+  border-radius: var(--radius);
+  background: var(--danger-bg);
+}
+
+.danger-zone .page-title {
+  margin-top: 0;
+}
+
+.danger-zone .danger-button {
+  margin-top: 0.75rem;
+  border-color: var(--danger);
+}

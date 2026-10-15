@@ -32,6 +32,33 @@ export default function SettingsPage() {
     })();
   }, []);
 
+  const [deleting, setDeleting] = useState(false);
+
+  async function deleteAccount() {
+    const confirmed = window.confirm(
+      'Permanently delete your account and all workout data? This cannot be undone.'
+    );
+    if (!confirmed) return;
+    // Second confirmation for an irreversible action.
+    if (!window.confirm('This is permanent. Delete everything?')) return;
+
+    setDeleting(true);
+    setError(null);
+    try {
+      const res = await fetch('/api/account', { method: 'DELETE' });
+      if (!res.ok) {
+        setError('Could not delete your account. Please try again.');
+        return;
+      }
+      // Account gone — send them to the public landing page.
+      window.location.href = '/';
+    } catch {
+      setError('Could not delete your account. Please try again.');
+    } finally {
+      setDeleting(false);
+    }
+  }
+
   async function save(nextUnit) {
     setSaving(true);
     setError(null);
@@ -100,6 +127,26 @@ export default function SettingsPage() {
               original values — only the display converts.
             </p>
           </div>
+        </section>
+      )}
+
+      {!loading && (
+        <section className="danger-zone">
+          <h2 className="page-title" style={{ fontSize: '1.1rem' }}>
+            Danger zone
+          </h2>
+          <p className="meta" style={{ color: 'var(--text-dim)' }}>
+            Deleting your account permanently removes your templates, exercises,
+            sessions, and history. This cannot be undone.
+          </p>
+          <button
+            type="button"
+            className="btn btn-secondary danger-button"
+            disabled={deleting}
+            onClick={deleteAccount}
+          >
+            {deleting ? 'Deleting…' : 'Delete my account'}
+          </button>
         </section>
       )}
 

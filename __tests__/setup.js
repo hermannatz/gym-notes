@@ -13,6 +13,10 @@ export const mockGetDbUser = jest.fn();
 export const mockAuth = jest.fn();
 export const mockCurrentUser = jest.fn();
 export const mockVerifyWebhook = jest.fn();
+export const mockDeleteUser = jest.fn();
+export const mockClerkClient = jest.fn(async () => ({
+  users: { deleteUser: mockDeleteUser },
+}));
 
 jest.unstable_mockModule('@/app/lib/db', () => ({
   sql: mockSql,
@@ -25,6 +29,7 @@ jest.unstable_mockModule('@/app/lib/auth', () => ({
 jest.unstable_mockModule('@clerk/nextjs/server', () => ({
   auth: mockAuth,
   currentUser: mockCurrentUser,
+  clerkClient: mockClerkClient,
 }));
 
 jest.unstable_mockModule('@clerk/nextjs/webhooks', () => ({
@@ -38,6 +43,8 @@ export function resetMocks() {
   mockAuth.mockReset();
   mockCurrentUser.mockReset();
   mockVerifyWebhook.mockReset();
+  mockDeleteUser.mockReset();
+  mockClerkClient.mockClear();
 }
 
 /** Build a Request with a JSON content-type header. */
