@@ -186,6 +186,17 @@ and building green, and until their scope is confirmed.
   - 10 new tests (89 total); the two analytics queries validated against Postgres 16.
   - _Requirements: 10.1, 10.2, 10.3, 12.4_
 
+- [x] 15b. Settings + UX polish (online-MVP readiness)
+  - `GET`/`PATCH /api/settings` for `preferred_unit` ('kg'|'lb'); `/settings` page with a
+    segmented toggle; Settings link in the app-shell header.
+  - Preferred unit wired through display: `/progress` and `/history/[id]` convert canonical
+    kg to the user's unit via `convertWeight`/`totalVolume(targetUnit)`; stored values
+    unchanged (non-destructive). `formatWeight` helper added to `app/lib/metrics.js`.
+  - Confirmation prompts on destructive actions (template archive here; the live-session
+    remove/finish/abandon confirms were added by the collaborator).
+  - 8 new tests (97 total).
+  - _Requirements: 12.4_
+
 - [ ] 16. Milestone 9 — Security hardening + cross-user tests
   - Cross-user access-denial tests on every protected resource; account deletion/retention
     policy; production transport and secret handling review.

@@ -57,3 +57,17 @@ export const SECONDARY_MUSCLE_FACTOR = 0.5;
 export function muscleAttributionFactor(role) {
   return role === 'primary' ? PRIMARY_MUSCLE_FACTOR : SECONDARY_MUSCLE_FACTOR;
 }
+
+/**
+ * Format a canonical kg value for display in the user's preferred unit.
+ * Analytics/history store and compute in kg; this converts only for display.
+ * Rounds to a whole number (volume) or one decimal (weights) as requested.
+ */
+export function formatWeight(valueKg, unit = 'kg', { decimals = 0 } = {}) {
+  const converted = convertWeight(valueKg, 'kg', unit);
+  const rounded =
+    decimals > 0
+      ? Number(converted.toFixed(decimals))
+      : Math.round(converted);
+  return `${rounded.toLocaleString()} ${unit}`;
+}

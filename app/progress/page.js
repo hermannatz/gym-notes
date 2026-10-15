@@ -2,6 +2,7 @@
 
 import { useEffect, useState } from 'react';
 import Link from 'next/link';
+import { convertWeight } from '@/app/lib/metrics';
 
 function weekLabel(value) {
   try {
@@ -19,15 +20,20 @@ export default function ProgressPage() {
   const [exercises, setExercises] = useState([]);
   const [selectedExercise, setSelectedExercise] = useState('');
   const [points, setPoints] = useState([]);
+  const [unit, setUnit] = useState('kg');
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
+
+  // Values from the analytics API are canonical kg; convert for display.
+  const toUnit = (kg) => Math.round(convertWeight(kg, 'kg', unit));
 
   useEffect(() => {
     (async () => {
       try {
-        const [volRes, exRes] = await Promise.all([
+        const [volRes, exRes, setRes] = await Promise.all([
           fetch('/api/analytics/volume-by-muscle?weeks=8'),
           fetch('/api/exercises'),
+          fetch('/api/settings'),
         ]);
         if (volRes.status === 401 || exRes.status === 401) {
           setError('Please sign in to view your progress.');
@@ -41,6 +47,10 @@ export default function ProgressPage() {
         const exData = await exRes.json();
         setMuscleData(volData.data ?? []);
         setExercises(exData.exercises ?? []);
+        if (setRes.ok) {
+          const setData = await setRes.json();
+          setUnit(setData.settings?.preferred_unit ?? 'kg');
+        }
       } catch {
         setError('Could not load progress.');
       } finally {
@@ -89,7 +99,7 @@ export default function ProgressPage() {
               Volume by muscle group
             </h2>
             <p className="meta" style={{ color: 'var(--text-dim)' }}>
-              Last 8 weeks · working sets only · kg
+              Last 8 weeks · working sets only · {unit}
             </p>
             {muscleTotals.length === 0 ? (
               <p>No training volume recorded yet.</p>
@@ -104,7 +114,7 @@ export default function ProgressPage() {
                         style={{ width: `${maxMuscle ? (vol / maxMuscle) * 100 : 0}%` }}
                       />
                     </span>
-                    <span className="bar-value num">{vol.toLocaleString()}</span>
+                    <span className="bar-value num">{toUnit(vol).toLocaleString()}</span>
                   </li>
                 ))}
               </ul>
@@ -140,8 +150,8 @@ export default function ProgressPage() {
                 <thead>
                   <tr>
                     <th>date</th>
-                    <th>volume kg</th>
-                    <th>top kg</th>
+                    <th>volume {unit}</th>
+                    <th>top {unit}</th>
                     <th></th>
                   </tr>
                 </thead>
@@ -149,8 +159,8 @@ export default function ProgressPage() {
                   {points.map((p) => (
                     <tr key={p.session_id}>
                       <td style={{ textAlign: 'left' }}>{weekLabel(p.started_at)}</td>
-                      <td className="num">{p.volume_kg.toLocaleString()}</td>
-                      <td className="num">{p.top_weight_kg}</td>
+                      <td className="num">{toUnit(p.volume_kg).toLocaleString()}</td>
+                      <td className="num">{toUnit(p.top_weight_kg)}</td>
                       <td style={{ width: '35%' }}>
                         <span className="bar-track">
                           <span

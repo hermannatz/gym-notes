@@ -536,6 +536,9 @@ button, a, input, select, summary { -webkit-tap-highlight-color: transparent; }
 .app-wordmark span { color: var(--accent); }
 .app-mode { display: flex; align-items: center; gap: .4rem; color: var(--text-dim); font-size: .68rem; letter-spacing: .04em; }
 .app-mode i { width: .38rem; height: .38rem; border-radius: 50%; background: var(--accent); }
+.app-settings-link { display: grid; place-items: center; color: var(--text-dim); text-decoration: none; }
+.app-settings-link:active { color: var(--text); }
+.app-settings-link svg { fill: none; stroke: currentColor; stroke-width: 1.8; stroke-linecap: round; stroke-linejoin: round; }
 
 .bottom-nav {
   position: fixed;
@@ -737,4 +740,38 @@ button, a, input, select, summary { -webkit-tap-highlight-color: transparent; }
   font-variant-numeric: tabular-nums;
   text-align: right;
   min-width: 3.5rem;
+}
+
+/* Segmented control (settings toggles) */
+.segmented {
+  display: inline-flex;
+  border: 1px solid var(--border-strong);
+  border-radius: var(--radius-sm);
+  overflow: hidden;
+  width: 100%;
+}
+
+.segmented-option {
+  flex: 1;
+  min-height: var(--tap);
+  padding: 0.6rem 1rem;
+  background: transparent;
+  color: var(--text-muted);
+  border: none;
+  cursor: pointer;
+  font-weight: 600;
+}
+
+.segmented-option + .segmented-option {
+  border-left: 1px solid var(--border-strong);
+}
+
+.segmented-option.is-active {
+  background: var(--accent);
+  color: var(--accent-ink);
+}
+
+.segmented-option:disabled {
+  opacity: 0.6;
+  cursor: default;
 }

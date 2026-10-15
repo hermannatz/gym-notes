@@ -7,6 +7,7 @@ import {
   muscleAttributionFactor,
   PRIMARY_MUSCLE_FACTOR,
   SECONDARY_MUSCLE_FACTOR,
+  formatWeight,
 } from '@/app/lib/metrics.js';
 
 describe('training metrics', () => {
@@ -66,5 +67,21 @@ describe('muscle attribution', () => {
   it('treats any non-primary role as secondary', () => {
     expect(muscleAttributionFactor('synergist')).toBe(SECONDARY_MUSCLE_FACTOR);
     expect(muscleAttributionFactor(undefined)).toBe(SECONDARY_MUSCLE_FACTOR);
+  });
+});
+
+describe('formatWeight', () => {
+  it('formats kg unchanged', () => {
+    expect(formatWeight(100, 'kg')).toBe('100 kg');
+  });
+
+  it('converts kg to lb for display', () => {
+    // 100 kg ≈ 220 lb (rounded)
+    expect(formatWeight(100, 'lb')).toBe('220 lb');
+  });
+
+  it('supports decimals when requested', () => {
+    expect(formatWeight(100, 'kg', { decimals: 1 })).toBe('100 kg');
+    expect(formatWeight(2.5, 'lb', { decimals: 1 })).toBe('5.5 lb');
   });
 });

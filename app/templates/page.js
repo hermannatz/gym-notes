@@ -85,6 +85,8 @@ export default function TemplatesPage() {
   }
 
   async function archive(id) {
+    if (!window.confirm('Archive this template? It will be hidden from your list.'))
+      return;
     setError(null);
     try {
       const res = await fetch(`/api/templates/${id}`, { method: 'DELETE' });

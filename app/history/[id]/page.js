@@ -23,6 +23,7 @@ function formatDate(value) {
 export default function HistorySessionPage({ params }) {
   const { id } = use(params);
   const [session, setSession] = useState(null);
+  const [unit, setUnit] = useState('kg');
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
 
@@ -44,6 +45,11 @@ export default function HistorySessionPage({ params }) {
         }
         const data = await res.json();
         setSession(data.session);
+        const setRes = await fetch('/api/settings');
+        if (setRes.ok) {
+          const setData = await setRes.json();
+          setUnit(setData.settings?.preferred_unit ?? 'kg');
+        }
       } catch {
         setError('Could not load the session.');
       } finally {
@@ -71,7 +77,7 @@ export default function HistorySessionPage({ params }) {
   }
 
   const sessionVolume = session.exercises.reduce(
-    (sum, ex) => sum + totalVolume(ex.sets),
+    (sum, ex) => sum + totalVolume(ex.sets, unit),
     0
   );
 
@@ -86,7 +92,7 @@ export default function HistorySessionPage({ params }) {
         {session.status}
       </p>
       <p className="meta" style={{ opacity: 0.7 }}>
-        Total working volume: {sessionVolume.toLocaleString()} kg
+        Total working volume: {Math.round(sessionVolume).toLocaleString()} {unit}
       </p>
 
       {session.exercises.length === 0 ? (
@@ -108,7 +114,7 @@ export default function HistorySessionPage({ params }) {
                 {[
                   ex.primary_muscle_group,
                   `${workingSetCount(ex.sets)} working sets`,
-                  `${totalVolume(ex.sets).toLocaleString()} kg`,
+                  `${Math.round(totalVolume(ex.sets, unit)).toLocaleString()} ${unit}`,
                 ]
                   .filter(Boolean)
                   .join(' · ')}
