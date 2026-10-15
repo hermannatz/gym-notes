@@ -32,6 +32,20 @@ describe('session exercises', () => {
     expect(res.status).toBe(404);
   });
 
+  it('POST 404 when the owned session is no longer in progress', async () => {
+    mockGetDbUser.mockResolvedValue(USER);
+    mockSql.mockResolvedValueOnce([]); // status-scoped session lookup fails
+    const res = await POST(
+      makeRequest('http://localhost', {
+        method: 'POST',
+        body: JSON.stringify({ exercise_id: 'e1' }),
+      }),
+      params({ id: 'completed-session' })
+    );
+    expect(res.status).toBe(404);
+    expect(mockSql.mock.calls[0].slice(1)).toContain('completed-session');
+  });
+
   it('POST 400 when exercise not visible', async () => {
     mockGetDbUser.mockResolvedValue(USER);
     mockSql
@@ -164,6 +178,19 @@ describe('sets', () => {
     expect(res.status).toBe(404);
   });
 
+  it('POST 404 when the parent session is completed', async () => {
+    mockGetDbUser.mockResolvedValue(USER);
+    mockSql.mockResolvedValueOnce([]); // in-progress ownership guard fails
+    const res = await POST(
+      makeRequest('http://localhost', {
+        method: 'POST',
+        body: JSON.stringify({ weight: 100, reps: 5 }),
+      }),
+      params({ id: 'completed-session', seId: 'se1' })
+    );
+    expect(res.status).toBe(404);
+  });
+
   it('POST 400 on negative weight', async () => {
     mockGetDbUser.mockResolvedValue(USER);
     const res = await POST(
@@ -222,6 +249,21 @@ describe('sets', () => {
     );
     expect(res.status).toBe(200);
     expect(mockSql.mock.calls[0].slice(1)).toContain(USER.id);
+    expect(mockSql.mock.calls[0].slice(1)).toContain('s');
+  });
+
+  it('PATCH 404 when the set is addressed through a different session', async () => {
+    mockGetDbUser.mockResolvedValue(USER);
+    mockSql.mockResolvedValue([]);
+    const res = await PATCH(
+      makeRequest('http://localhost', {
+        method: 'PATCH',
+        body: JSON.stringify({ completed: true }),
+      }),
+      params({ id: 'wrong-session', seId: 'se1', setId: 'ws1' })
+    );
+    expect(res.status).toBe(404);
+    expect(mockSql.mock.calls[0].slice(1)).toContain('wrong-session');
   });
 
   it('DELETE 404 when not owned', async () => {

@@ -1,4 +1,5 @@
 import { ClerkProvider } from '@clerk/nextjs';
+import AppShell from '@/app/ui/app-shell';
 import './globals.css';
 
 export const metadata = {
@@ -13,7 +14,7 @@ export default function RootLayout({ children }) {
       signUpFallbackRedirectUrl="/dashboard"
     >
       <html lang="en">
-        <body>{children}</body>
+        <body><AppShell>{children}</AppShell></body>
       </html>
     </ClerkProvider>
   );

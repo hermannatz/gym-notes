@@ -318,7 +318,10 @@ user id is never trusted.
   issues one scoped `UPDATE ... SET position = index` per id inside a single `sql.transaction()`
   (lazy `NeonQueryPromise` descriptors), so the reorder is all-or-nothing.
 - **UI:** `/templates` (list, create, duplicate, archive) and `/templates/[id]` (rename on
-  blur, add exercise from the library, up/down reorder, remove, target sets). Mobile-first;
+  blur, add exercise from the library, up/down reorder, remove, and edit target sets, rep
+  range, weight, and rest seconds). Exercise targets use collapsed summaries so full planning
+  detail remains available without making the mobile list visually dense. Mutations provide
+  explicit success/error feedback. Mobile-first;
   reorder uses up/down buttons rather than drag-drop for touch reliability.
 - Cross-user denial covered by tests and validated at the SQL level against Postgres 16.
 
@@ -337,6 +340,8 @@ user id is never trusted.
   `DELETE` removes the session (cascades to exercises/sets).
 - `POST /api/sessions/[id]/exercises` — add an exercise mid-session (visible-exercise check);
   `PATCH [seId]` skip/unskip or reposition; `DELETE [seId]` remove (cascades to its sets).
+  All session mutations require an owned `in_progress` parent; completed/abandoned history is
+  immutable. Nested set mutations also scope the set to the session id present in the URL.
 - `GET /api/sessions/[id]/exercises/[seId]/previous` — **previous performance**: the most
   recent other session (any status) containing the same exercise, with that session's sets, for
   side-by-side comparison. `{ previous: null }` when there is no history.
@@ -346,16 +351,19 @@ user id is never trusted.
   (`... IN (SELECT ... WHERE owner_user_id = user)`), so a foreign session/exercise/set matches
   nothing → 404 (no leak). Covered by tests and validated against Postgres 16.
 - **UI:** `/train` (start blank or from a template, resume in-progress) and `/train/[id]` (the
-  live screen: per-set weight/reps/complete entry table, add/edit/delete sets, "show last time",
-  add/skip/remove exercise, finish/abandon). Mobile-first with large numeric inputs; mutations
-  reload for correctness (optimistic/offline writes arrive in Milestone 6).
+  live screen: per-set weight/reps/complete entry, add/edit/delete sets, automatically loaded
+  previous performance, add/skip/remove exercise, progress indicator, finish/abandon
+  confirmation, and save/error feedback). Mobile-first with large numeric inputs and a
+  safe-area-aware sticky finish action; mutations reload for correctness (optimistic/offline
+  writes arrive in Milestone 6).
 
 ### Training history (Milestone 5, implemented)
 
 History is a UI layer over the existing sessions API — no new routes or migration. `GET
 /api/sessions` (with `?status=`) powers the list; `GET /api/sessions/[id]` powers the detail
 view. A shared `app/lib/metrics.js` defines the working-volume rule in one place (only
-completed, non-warm-up sets count; volume = weight × reps), unit-tested, and reused by history
+completed, non-warm-up sets count; weights are converted to one display unit before volume is
+summed), unit-tested, and reused by history
 summaries now and analytics later (Milestone 8). UI: `/history` (unfinished sessions with
 resume links + completed/abandoned list) and `/history/[id]` (read-only session detail with
 per-exercise working-set count and volume). Historical records are presented as actual results,
@@ -379,8 +387,15 @@ centralized:
 - **Landing page (`/`):** the showcase for the system — wordmark + hairline header, eyebrow
   label, large tight hero, an instrument-style stat band (sample volume / working sets /
   +% vs previous), a crisp hairline feature list, and a single lime CTA (auth-aware via
-  server-side `auth()`). The app screens (dashboard/exercises/templates/train/history) inherit
-  the tokens now; a fuller per-screen layout polish is a later pass.
+  server-side `auth()`).
+- **Authenticated shell:** a compact brand/status header and safe-area-aware bottom navigation
+  provide stable access to Home, Plans, Train, History, and Exercises. The live-session route
+  hides the general navigation to reduce distraction and reserve the thumb zone for workout
+  completion controls.
+- **Application screens:** the dashboard prioritizes the training CTA; list screens share
+  section headings, counts, empty/loading states, and consistent action groups; history uses a
+  restrained timeline; the live recorder uses high-legibility set rows and completion states.
+  Motion is subtle and disabled through `prefers-reduced-motion`.
 
 ### Offline + sync design
 

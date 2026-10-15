@@ -63,7 +63,7 @@ export default function StartTrainingPage() {
 
   return (
     <main className="container">
-      <h1 className="page-title">Start Training</h1>
+      <header className="page-header"><p className="eyebrow">Session</p><h1 className="page-title">Start training</h1><p className="page-lead">Pick up where you left off or begin something new.</p></header>
 
       {error && (
         <div className="notice notice-error" role="alert">
@@ -73,12 +73,10 @@ export default function StartTrainingPage() {
 
       {inProgress.length > 0 && (
         <section>
-          <h2 className="page-title" style={{ fontSize: '1.1rem' }}>
-            Resume
-          </h2>
+          <div className="section-heading"><div><p className="eyebrow">In progress</p><h2>Resume</h2></div><span className="status-dot">Live</span></div>
           <ul className="exercise-list">
             {inProgress.map((s) => (
-              <li key={s.id} className="exercise-item">
+              <li key={s.id} className="exercise-item session-list-card">
                 <span className="name">
                   <Link href={`/train/${s.id}`}>
                     {s.name || 'Workout'}
@@ -93,21 +91,19 @@ export default function StartTrainingPage() {
         </section>
       )}
 
-      <section style={{ marginTop: '1.5rem' }}>
+      <section className="start-blank-panel">
         <button
           className="btn"
           type="button"
           disabled={starting}
           onClick={() => start(null)}
         >
-          Start a blank workout
+          <span>Start a blank workout</span><span aria-hidden="true">→</span>
         </button>
       </section>
 
-      <section style={{ marginTop: '1.5rem' }}>
-        <h2 className="page-title" style={{ fontSize: '1.1rem' }}>
-          From a template
-        </h2>
+      <section className="content-section">
+        <div className="section-heading"><div><p className="eyebrow">Your plans</p><h2>From a template</h2></div></div>
         {loading ? (
           <p>Loading…</p>
         ) : templates.length === 0 ? (
@@ -117,17 +113,17 @@ export default function StartTrainingPage() {
         ) : (
           <ul className="exercise-list">
             {templates.map((t) => (
-              <li key={t.id} className="exercise-item">
+              <li key={t.id} className="exercise-item template-launch-card">
                 <span className="name">{t.name}</span>
                 <span className="meta">{t.exercise_count} exercises</span>
-                <div style={{ marginTop: '0.5rem' }}>
+                <div className="card-actions">
                   <button
                     className="btn"
                     type="button"
                     disabled={starting}
                     onClick={() => start(t.id)}
                   >
-                    Start
+                    Start <span aria-hidden="true">→</span>
                   </button>
                 </div>
               </li>

@@ -221,6 +221,8 @@ results separately from planned targets.
    its exercises and sets, date, and workout type.
 2. WHEN viewing history THEN historical records SHALL be treated as actual results, distinct
    from planned targets, and unfinished sessions SHALL be resumable.
+3. WHEN a session is completed or abandoned THEN exercise and set mutation endpoints SHALL treat
+   its recorded results as immutable and return 404 for attempted nested writes.
 
 ### Requirement 8: Offline-first operation (later milestone, mandatory for MVP)
 
@@ -307,6 +309,13 @@ feels like a dedicated workout tool during training.
    preferred unit, and conversions SHALL preserve the intended physical values.
 5. WHEN the UI is built THEN it SHALL use accessible semantic markup, keyboard navigation where
    applicable, and sufficient contrast.
+
+**Current implementation note:** The authenticated application now uses a persistent
+mobile navigation shell outside the focused live-session route. The live recorder keeps
+set inputs and completion controls thumb-accessible, shows previous performance without an
+extra tap, provides visible save/error feedback, and keeps the finish action in a safe-area
+aware sticky footer. Offline/synchronization status remains Milestone 6 work and is not
+represented as implemented.
 
 ### Requirement 13: Security and data integrity
 

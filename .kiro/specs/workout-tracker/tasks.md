@@ -129,6 +129,25 @@ and building green, and until their scope is confirmed.
   - 5 new metrics tests (77 total).
   - _Requirements: 7.1, 7.2, 6.4_
 
+- [x] 12.1 Onboarding maintenance and integrity hardening
+  - Standardize local development on Node.js 22 LTS (`engines`, `.nvmrc`, README).
+  - Enforce immutable completed/abandoned sessions and complete nested URL scoping in SQL.
+  - Normalize mixed kg/lb history volume to kilograms before summing.
+  - Surface template mutation failures and expose all existing exercise target fields.
+  - Add regression tests for status guards, URL hierarchy, and unit conversion.
+
+- [x] 12.2 Mobile application UI refinement
+  - Add the authenticated app shell with persistent mobile navigation and a focused
+    live-session mode.
+  - Rework the dashboard hierarchy around the primary training action.
+  - Refine live set entry with automatic previous-performance context, large numeric inputs,
+    clear completion states, progress, confirmations, and save/error feedback.
+  - Compact template planning into scannable summaries with expandable target editing.
+  - Standardize cards, section headings, loading states, safe-area spacing, focus styles, and
+    reduced-motion behavior across templates, exercises, training, and history.
+  - No new dependencies, schema changes, or claims of offline synchronization.
+  - _Requirements: 5.2, 5.3, 5.5, 12.1, 12.2, 12.3, 12.5_
+
 - [ ] 13. Milestone 6 — Offline persistence + PWA shell
   - IndexedDB local store (UUID IDs, pending-changes queue); service worker + manifest; install
     to Home Screen; durable write path; sync-status UI.

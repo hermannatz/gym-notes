@@ -18,7 +18,7 @@ Read the spec before changing related code; it is kept current per milestone:
 
 The full conventions are in #[[file:AGENTS.md]]. Key points:
 
-- **Stack:** Next.js 16 / React 19 (ESM), Neon serverless Postgres (tagged `sql`),
+- **Stack:** Node.js 22 LTS, Next.js 16 / React 19 (ESM), Neon serverless Postgres (tagged `sql`),
   Clerk auth, Nodemailer, Jest 30 ESM, serverless deploy with migrations on `postbuild`.
 - **API convention:** auth (`getDbUser()` → 401) → validate (→ 400) → try/catch (→ 500);
   always `Response.json(...)`.

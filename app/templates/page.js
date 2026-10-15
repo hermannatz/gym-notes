@@ -9,6 +9,7 @@ export default function TemplatesPage() {
   const [error, setError] = useState(null);
   const [name, setName] = useState('');
   const [creating, setCreating] = useState(false);
+  const [success, setSuccess] = useState(null);
 
   async function load() {
     setLoading(true);
@@ -45,6 +46,7 @@ export default function TemplatesPage() {
     }
     setCreating(true);
     setError(null);
+    setSuccess(null);
     try {
       const res = await fetch('/api/templates', {
         method: 'POST',
@@ -57,6 +59,7 @@ export default function TemplatesPage() {
         return;
       }
       setName('');
+      setSuccess('Template created.');
       await load();
     } catch {
       setError('Could not create template.');
@@ -97,15 +100,16 @@ export default function TemplatesPage() {
 
   return (
     <main className="container">
-      <h1 className="page-title">Templates</h1>
+      <header className="page-header"><p className="eyebrow">Programming</p><h1 className="page-title">Templates</h1><p className="page-lead">Build once, then focus on the work.</p></header>
 
       {error && (
         <div className="notice notice-error" role="alert">
           {error}
         </div>
       )}
+      {success && <div className="notice notice-success" role="status">✓ {success}</div>}
 
-      <form onSubmit={createTemplate} aria-label="Create template">
+      <form onSubmit={createTemplate} aria-label="Create template" className="inline-create-panel">
         <div className="field">
           <label htmlFor="tpl-name">New template name</label>
           <input
@@ -122,7 +126,8 @@ export default function TemplatesPage() {
         </button>
       </form>
 
-      <div style={{ marginTop: '1.5rem' }}>
+      <section className="content-section">
+        <div className="section-heading"><div><p className="eyebrow">Library</p><h2>Your plans</h2></div><span className="count-badge">{templates.length}</span></div>
         {loading ? (
           <p>Loading…</p>
         ) : templates.length === 0 ? (
@@ -130,7 +135,7 @@ export default function TemplatesPage() {
         ) : (
           <ul className="exercise-list">
             {templates.map((t) => (
-              <li key={t.id} className="exercise-item">
+              <li key={t.id} className="exercise-item template-list-card">
                 <span className="name">
                   <Link href={`/templates/${t.id}`}>{t.name}</Link>
                 </span>
@@ -138,7 +143,7 @@ export default function TemplatesPage() {
                   {t.exercise_count}{' '}
                   {t.exercise_count === 1 ? 'exercise' : 'exercises'}
                 </span>
-                <div style={{ display: 'flex', gap: '0.5rem', marginTop: '0.5rem' }}>
+                <div className="card-actions">
                   <button
                     className="btn btn-secondary"
                     type="button"
@@ -158,7 +163,7 @@ export default function TemplatesPage() {
             ))}
           </ul>
         )}
-      </div>
+      </section>
     </main>
   );
 }

@@ -12,7 +12,7 @@ export async function PATCH(request, { params }) {
     return Response.json({ error: 'Unauthorized' }, { status: 401 });
   }
 
-  const { seId, setId } = await params;
+  const { id, seId, setId } = await params;
 
   let body;
   try {
@@ -80,7 +80,9 @@ export async function PATCH(request, { params }) {
         AND ws.session_exercise_id IN (
           SELECT se.id FROM session_exercises se
           JOIN training_sessions s ON s.id = se.session_id
-          WHERE s.owner_user_id = ${user.id}
+          WHERE se.session_id = ${id}
+            AND s.owner_user_id = ${user.id}
+            AND s.status = 'in_progress'
         )
       RETURNING ws.id, ws.session_exercise_id, ws.set_order, ws.weight,
         ws.weight_unit, ws.reps, ws.completed, ws.set_type
@@ -108,7 +110,7 @@ export async function DELETE(_request, { params }) {
     return Response.json({ error: 'Unauthorized' }, { status: 401 });
   }
 
-  const { seId, setId } = await params;
+  const { id, seId, setId } = await params;
 
   try {
     const rows = await sql`
@@ -118,7 +120,9 @@ export async function DELETE(_request, { params }) {
         AND ws.session_exercise_id IN (
           SELECT se.id FROM session_exercises se
           JOIN training_sessions s ON s.id = se.session_id
-          WHERE s.owner_user_id = ${user.id}
+          WHERE se.session_id = ${id}
+            AND s.owner_user_id = ${user.id}
+            AND s.status = 'in_progress'
         )
       RETURNING ws.id
     `;

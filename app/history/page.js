@@ -49,7 +49,7 @@ export default function HistoryPage() {
 
   return (
     <main className="container">
-      <h1 className="page-title">History</h1>
+      <header className="page-header"><p className="eyebrow">Training log</p><h1 className="page-title">History</h1><p className="page-lead">Your completed work, session by session.</p></header>
 
       {error && (
         <div className="notice notice-error" role="alert">
@@ -63,9 +63,7 @@ export default function HistoryPage() {
         <>
           {inProgress.length > 0 && (
             <section>
-              <h2 className="page-title" style={{ fontSize: '1.1rem' }}>
-                Unfinished
-              </h2>
+              <div className="section-heading"><div><p className="eyebrow">Continue</p><h2>Unfinished</h2></div><span className="status-dot">Live</span></div>
               <ul className="exercise-list">
                 {inProgress.map((s) => (
                   <li key={s.id} className="exercise-item">
@@ -83,14 +81,12 @@ export default function HistoryPage() {
             </section>
           )}
 
-          <section style={{ marginTop: inProgress.length ? '1.5rem' : 0 }}>
-            <h2 className="page-title" style={{ fontSize: '1.1rem' }}>
-              Completed
-            </h2>
+          <section className="content-section">
+            <div className="section-heading"><div><p className="eyebrow">Archive</p><h2>Completed</h2></div><span className="count-badge">{past.length}</span></div>
             {past.length === 0 ? (
               <p>No completed sessions yet.</p>
             ) : (
-              <ul className="exercise-list">
+              <ul className="exercise-list history-timeline">
                 {past.map((s) => (
                   <li key={s.id} className="exercise-item">
                     <span className="name">

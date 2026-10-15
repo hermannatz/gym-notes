@@ -45,7 +45,8 @@ export async function PATCH(request, { params }) {
       WHERE se.id = ${seId}
         AND se.session_id = ${id}
         AND se.session_id IN (
-          SELECT id FROM training_sessions WHERE owner_user_id = ${user.id}
+          SELECT id FROM training_sessions
+          WHERE owner_user_id = ${user.id} AND status = 'in_progress'
         )
       RETURNING se.id, se.exercise_id, se.position, se.skipped
     `;
@@ -80,7 +81,8 @@ export async function DELETE(_request, { params }) {
       WHERE se.id = ${seId}
         AND se.session_id = ${id}
         AND se.session_id IN (
-          SELECT id FROM training_sessions WHERE owner_user_id = ${user.id}
+          SELECT id FROM training_sessions
+          WHERE owner_user_id = ${user.id} AND status = 'in_progress'
         )
       RETURNING se.id
     `;
